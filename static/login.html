@@ -669,209 +669,67 @@
     </div>
     
     <script>
-        // Crear partículas flotantes
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 15;
-            
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                
-                // Tamaño aleatorio entre 5px y 15px
-                const size = Math.random() * 10 + 5;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                // Posición inicial aleatoria
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.bottom = `-${size}px`;
-                
-                // Duración de animación aleatoria
-                const duration = Math.random() * 10 + 10;
-                particle.style.animationDuration = `${duration}s`;
-                
-                // Retraso inicial aleatorio
-                particle.style.animationDelay = `${Math.random() * 10}s`;
-                
-                particlesContainer.appendChild(particle);
-            }
-        }
+    // Manejo del formulario de login
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Iniciar animación de partículas
-        createParticles();
-        
-        // Animación del formulario al cargar
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.querySelector('.login-form');
-            form.style.opacity = '0';
-            form.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                form.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                form.style.opacity = '1';
-                form.style.transform = 'translateY(0)';
-            }, 300);
-        });
-        
-        // Manejo del formulario de login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const usuario = document.getElementById('usuario').value;
-    const clave = document.getElementById('clave').value;
+        const usuario = document.getElementById('usuario').value;
+        const clave = document.getElementById('clave').value;
 
-    console.log("Enviando:", { usuario, clave }); // Debug
-
-    fetch('/api/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            usuario: usuario,
-            clave: clave
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                usuario: usuario,
+                clave: clave
+            })
         })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Respuesta:", data); // Debug
-        if (data.success) {
-            localStorage.setItem('nombre', data.nombre);
-            localStorage.setItem('cargo', data.cargo);
-            window.location.href = "/dashboard";
-        } else {
-            alert(data.message || 'Credenciales incorrectas');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error de conexión con el servidor');
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Guardar datos en localStorage
+                localStorage.setItem('nombre', data.nombre);
+                localStorage.setItem('cargo', data.cargo);
+                localStorage.setItem('cedula', data.cedula);
+                localStorage.setItem('correo', data.correo);
+                
+                // Redirigir al dashboard
+                window.location.href = "/dashboard";
+            } else {
+                alert(data.message || 'Credenciales incorrectas');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión con el servidor. Por favor intente nuevamente.');
+        });
     });
-});
-        // Efectos de hover mejorados
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.style.boxShadow = '0 5px 15px rgba(226, 0, 26, 0.1)';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.style.boxShadow = '0 3px 10px rgba(226, 0, 26, 0.05)';
-            });
-        });
-        
-        // Manejo del modal de recuperación de contraseña
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-        const passwordModal = document.getElementById('passwordModal');
-        const modalClose = document.getElementById('modalClose');
-        const backToLogin = document.getElementById('backToLogin');
-        
-        // Abrir modal
-        forgotPasswordLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            passwordModal.classList.add('active');
-        });
-        
-        // Cerrar modal
-        modalClose.addEventListener('click', function() {
-            passwordModal.classList.remove('active');
-        });
-        
-        backToLogin.addEventListener('click', function(e) {
-            e.preventDefault();
-            passwordModal.classList.remove('active');
-        });
-        
-        // Cerrar al hacer clic fuera del modal
-        passwordModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-            }
-        });
-        
-        // Manejo del formulario de recuperación
-        document.getElementById('resetForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('resetEmail').value;
-            
-            // Validación simple de email
-            if (!email.includes('@') || !email.includes('.')) {
-                alert('Por favor ingresa una dirección de correo electrónico válida.');
-                return;
-            }
-            
-            // Simular envío de instrucciones
-            alert(`Se han enviado instrucciones para restablecer tu contraseña a ${email}`);
-            passwordModal.classList.remove('active');
-        });
-        
-        // Manejo del modal de solicitud de acceso
-        const requestAccessLink = document.getElementById('requestAccessLink');
-        const accessModal = document.getElementById('accessModal');
-        const accessModalClose = document.getElementById('accessModalClose');
-        const backToLoginFromAccess = document.getElementById('backToLoginFromAccess');
-        
-        // Abrir modal de solicitud de acceso
-        requestAccessLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            accessModal.classList.add('active');
-        });
-        
-        // Cerrar modal de solicitud de acceso
-        accessModalClose.addEventListener('click', function() {
-            accessModal.classList.remove('active');
-        });
-        
-        backToLoginFromAccess.addEventListener('click', function(e) {
-            e.preventDefault();
-            accessModal.classList.remove('active');
-        });
-        
-        // Cerrar al hacer clic fuera del modal
-        accessModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.remove('active');
-            }
-        });
-        
-        // Manejo del formulario de solicitud de acceso
-        document.getElementById('accessForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validar campos
-            const fullName = document.getElementById('fullName').value;
-            const companyEmail = document.getElementById('companyEmail').value;
-            const employeeId = document.getElementById('employeeId').value;
-            const department = document.getElementById('department').value;
-            const position = document.getElementById('position').value;
-            const accessReason = document.getElementById('accessReason').value;
-            
-            if (!fullName || !companyEmail || !employeeId || !department || !position || !accessReason) {
-                alert('Por favor complete todos los campos del formulario.');
-                return;
-            }
-            
-            if (!companyEmail.includes('@claro.com')) {
-                alert('Por favor ingrese un correo corporativo válido (@claro.com).');
-                return;
-            }
-            
-            // Simular envío de solicitud
-            alert(`Solicitud de acceso enviada correctamente. Recibirá una respuesta en ${companyEmail} en un plazo de 48 horas.`);
-            accessModal.classList.remove('active');
-            
-            // Limpiar el formulario
-            this.reset();
 
-        });
-    </script>
+    // Crear partículas flotantes
+    function createParticles() {
+        const particles = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            particle.style.width = `${Math.random() * 10 + 5}px`;
+            particle.style.height = particle.style.width;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particles.appendChild(particle);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', createParticles);
+</script>
 
 
         
