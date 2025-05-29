@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
+app.config['SESSION_COOKIE_DOMAIN'] = None
 
 # Configuración de la base de datos
 db_config = {
