@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claro UMM</title>
+    <title>Mercado Masivo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="https://cdn.aglty.io/scotiabank-colombia/CodensaAssets/catalogue/images/promociones/logos-aliados/LOGO-claro-8mayo.png" type="image/x-icon"/>
     <style>
@@ -12,7 +12,6 @@
         :root {
             --claro-primary: #E2001A;
             --claro-dark: #A30000;
-            --claro-light: #FF4D4D;
             --claro-gradient: linear-gradient(135deg, #E2001A 0%, #A30000 100%);
             --white: #FFFFFF;
             --light-gray: #F8F9FA;
@@ -28,24 +27,18 @@
         }
         
         body {
-            background-color: var(--light-gray);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(226, 0, 26, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(226, 0, 26, 0.05) 0%, transparent 20%);
-            animation: float 12s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        @keyframes float {
-            0%, 100% { background-position: 10% 20%, 90% 80%; }
-            50% { background-position: 15% 25%, 85% 75%; }
-        }
-        
+              background-color: var(--light-gray);
+                background-image: url('static/Images/image.jpg'); 
+                background-size: cover; /* Cubre todo el área */
+                background-position: center; /* Centra la imagen */
+                background-repeat: no-repeat; /* Evita que se repita */
+                background-attachment: fixed; /* Fija la imagen al desplazarse */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+    
         .login-container {
             width: 100%;
             max-width: 420px;
@@ -55,10 +48,6 @@
             overflow: hidden;
             transform: translateY(0);
             transition: var(--transition);
-            position: relative;
-            z-index: 2;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .login-container:hover {
@@ -71,52 +60,36 @@
             color: white;
             padding: 40px 30px 30px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.8; }
-            50% { opacity: 1; }
         }
         
         .login-header h1 {
             font-weight: 700;
             font-size: 28px;
             margin-bottom: 8px;
-            position: relative;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .login-header p {
             font-weight: 300;
             font-size: 15px;
             opacity: 0.9;
-            position: relative;
-            letter-spacing: 0.5px;
         }
         
         .logo {
             margin-bottom: 20px;
-            position: relative;
             display: flex;
             justify-content: center;
         }
         
         .logo img {
             height: 50px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
         
         .login-form {
             padding: 40px;
-            position: relative;
         }
         
         .form-group {
             margin-bottom: 25px;
-            position: relative;
         }
         
         .form-group label {
@@ -125,7 +98,6 @@
             font-weight: 500;
             color: var(--dark-gray);
             font-size: 14px;
-            transition: var(--transition);
         }
         
         .input-container {
@@ -142,7 +114,6 @@
             transform: translateY(-50%);
             color: var(--claro-primary);
             font-size: 16px;
-            transition: var(--transition);
             z-index: 2;
         }
         
@@ -152,102 +123,18 @@
             border: 1px solid rgba(0,0,0,0.1);
             border-radius: 8px;
             font-size: 15px;
-            transition: var(--transition);
             background-color: rgba(255,255,255,0.8);
-            position: relative;
         }
         
         .form-group input:focus {
             border-color: var(--claro-primary);
             box-shadow: 0 0 0 3px rgba(226, 0, 26, 0.1);
             outline: none;
-            padding-left: 50px;
-        }
-        
-        .form-group input:focus + i {
-            color: var(--claro-dark);
-            transform: translateY(-50%) scale(1.1);
         }
         
         .form-group input::placeholder {
             color: #aaa;
             font-weight: 300;
-        }
-        
-        /* Estilos específicos para el campo de contraseña */
-        .password-container {
-            position: relative;
-        }
-        
-        /* Icono de candado a la izquierda */
-        .password-container .fa-lock {
-            left: 15px;
-        }
-        
-        /* Icono de mostrar/ocultar a la izquierda (antes del candado) */
-        .toggle-password {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-            cursor: pointer;
-            z-index: 2;
-            transition: var(--transition);
-            font-size: 16px;
-            pointer-events: auto;
-        }
-        
-        /* Icono de candado se mueve a la derecha cuando hay toggle */
-        .password-container.with-toggle .fa-lock {
-            left: 40px;
-        }
-        
-        /* Ajuste de padding cuando hay toggle */
-        .password-container.with-toggle input {
-            padding-left: 70px;
-        }
-        
-        .toggle-password:hover {
-            color: var(--claro-primary);
-        }
-        
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-        
-        .remember-me {
-            display: flex;
-            align-items: center;
-        }
-        
-        .remember-me input {
-            margin-right: 8px;
-            accent-color: var(--claro-primary);
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-        
-        .remember-me label {
-            color: #666;
-            cursor: pointer;
-        }
-        
-        .forgot-password a {
-            color: var(--claro-primary);
-            text-decoration: none;
-            transition: var(--transition);
-            font-weight: 500;
-        }
-        
-        .forgot-password a:hover {
-            color: var(--claro-dark);
-            text-decoration: underline;
         }
         
         .login-button {
@@ -260,11 +147,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
             box-shadow: 0 4px 15px rgba(226, 0, 26, 0.3);
-            letter-spacing: 0.5px;
         }
         
         .login-button:hover {
@@ -272,260 +155,10 @@
             box-shadow: 0 7px 20px rgba(226, 0, 26, 0.4);
         }
         
-        .login-button:active {
-            transform: translateY(1px);
-        }
-        
-        
-        .signup-link {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .signup-link a {
-            color: var(--claro-primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            position: relative;
-        }
-        
-        .signup-link a::after {
-            content: "";
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--claro-primary);
-            transition: var(--transition);
-        }
-        
-        .signup-link a:hover::after {
-            width: 100%;
-        }
-        
-        .floating-particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        
-        .particle {
-            position: absolute;
-            background: rgba(226, 0, 26, 0.1);
-            border-radius: 50%;
-            animation: float-particle 15s infinite linear;
-        }
-        
-        @keyframes float-particle {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
-        }
-        
-        .language-selector {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 3;
-        }
-        
-        .language-selector select {
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.2);
-            color: white;
-            font-size: 12px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .language-selector select:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .language-selector select:focus {
-            outline: none;
-        }
-        
-        /* Modal de recuperación de contraseña */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-        
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .modal-container {
-            background: white;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .modal-overlay.active .modal-container {
-            transform: translateY(0);
-        }
-        
-        .modal-header {
-            background: var(--claro-gradient);
-            color: white;
-            padding: 25px 30px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .modal-header h2 {
-            font-weight: 700;
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .modal-header p {
-            font-weight: 300;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        
-        .modal-close:hover {
-            transform: rotate(90deg);
-        }
-        
-        .modal-content {
-            padding: 30px;
-        }
-        
-        .modal-form-group {
-            margin-bottom: 20px;
-        }
-        
-        .modal-form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--dark-gray);
-            font-size: 14px;
-        }
-        
-        .modal-form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 8px;
-            font-size: 15px;
-            transition: var(--transition);
-        }
-        
-        .modal-form-group input:focus {
-            border-color: var(--claro-primary);
-            box-shadow: 0 0 0 3px rgba(226, 0, 26, 0.1);
-            outline: none;
-        }
-        
-        .modal-button {
-            width: 100%;
-            padding: 14px;
-            background: var(--claro-gradient);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 10px;
-        }
-        
-        .modal-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(226, 0, 26, 0.3);
-        }
-        
-        .modal-footer {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .modal-footer a {
-            color: var(--claro-primary);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .modal-footer a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Modal de solicitud de acceso */
-        .access-modal .modal-header {
-            padding: 25px 30px 20px;
-        }
-        
-        .access-modal .modal-content {
-            padding: 25px 30px;
-        }
-        
-        .access-modal .modal-form-group {
-            margin-bottom: 15px;
-        }
-        
-        .access-modal .modal-form-group label {
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
-        
-        .access-modal .modal-form-group input,
-        .access-modal .modal-form-group select,
-        .access-modal .modal-form-group textarea {
-            padding: 10px 12px;
-            font-size: 14px;
-        }
-        
-        .access-modal .modal-footer {
-            margin-top: 15px;
-            font-size: 13px;
+        #loginError {
+            color: #E2001A; 
+            text-align: center; 
+            margin-bottom: 10px;
         }
         
         @media (max-width: 480px) {
@@ -541,29 +174,19 @@
             .login-form {
                 padding: 30px;
             }
-            
-            .modal-container {
-                max-width: 90%;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="floating-particles" id="particles"></div>
-    
     <div class="login-container">
-        
         <div class="login-header">
-            <div class="logo">
-                <!-- Logo oficial de Claro -->
-                <img src="/Image/Claro.png" alt="Claro Logo">
-            </div>
+            
             <h1>Acceso Seguro</h1>
             <p>Unidad de Mercado Masivo</p>
         </div>
         
         <div class="login-form">
-            <div id="loginError" style="color: #E2001A; text-align: center; margin-bottom: 10px;"></div>
+            <div id="loginError"></div>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="usuario">Usuario</label>
@@ -574,108 +197,23 @@
                 </div>
                 <div class="form-group">
                     <label for="clave">Contraseña</label>
-                    <div class="input-container password-container">
+                    <div class="input-container">
                         <i class="fas fa-lock"></i>
                         <input type="password" id="clave" name="clave" placeholder="Ingresa tu contraseña" required>
                     </div>
                 </div>
-                <button type="submit" class="login-button">
-                    <span class="button-text">Ingresar</span>
-                </button>
+                <button type="submit" class="login-button">Ingresar</button>
             </form>
-            
-            <div class="signup-link">
-                ¿Nuevo en la plataforma? <a href="#" id="requestAccessLink">Solicitar acceso</a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de recuperación de contraseña -->
-    <div class="modal-overlay" id="passwordModal">
-        <div class="modal-container">
-            <button class="modal-close" id="modalClose">&times;</button>
-            <div class="modal-header">
-                <h2>Recuperar Contraseña</h2>
-                <p>Ingresa tu correo electrónico para restablecer tu contraseña</p>
-            </div>
-            <div class="modal-content">
-                <form id="resetForm">
-                    <div class="modal-form-group">
-                        <label for="resetEmail">Correo Electrónico</label>
-                        <input type="email" id="resetEmail" placeholder="correo@ejemplo.com" required>
-                    </div>
-                    <button type="submit" class="modal-button">Enviar Instrucciones</button>
-                </form>
-                <div class="modal-footer">
-                    <a href="#" id="backToLogin">Volver al inicio de sesión</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Modal de solicitud de acceso -->
-    <div class="modal-overlay" id="accessModal">
-        <div class="modal-container access-modal">
-            <button class="modal-close" id="accessModalClose">&times;</button>
-            <div class="modal-header">
-                <h2>Solicitar Acceso</h2>
-                <p>Complete el formulario para solicitar acceso a la plataforma</p>
-            </div>
-            <div class="modal-content">
-                <form id="accessForm">
-                    <div class="modal-form-group">
-                        <label for="fullName">Nombre Completo</label>
-                        <input type="text" id="fullName" placeholder="Nombre y apellido" required>
-                    </div>
-                    
-                    <div class="modal-form-group">
-                        <label for="companyEmail">Correo Corporativo</label>
-                        <input type="email" id="companyEmail" placeholder="correo@claro.com" required>
-                    </div>
-                    
-                    <div class="modal-form-group">
-                        <label for="employeeId">ID de Empleado</label>
-                        <input type="text" id="employeeId" placeholder="Número de empleado" required>
-                    </div>
-                    
-                    <div class="modal-form-group">
-                        <label for="department">Departamento</label>
-                        <select id="department" required>
-                            <option value="">Seleccione un departamento</option>
-                            <option value="umm">Unidad de Mercado Masivo</option>
-                            <option value="ventas">Ventas</option>
-                            <option value="marketing">Marketing</option>
-                            <option value="soporte">Soporte Técnico</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
-                    
-                    <div class="modal-form-group">
-                        <label for="position">Cargo</label>
-                        <input type="text" id="position" placeholder="Su cargo en la empresa" required>
-                    </div>
-                    
-                    <div class="modal-form-group">
-                        <label for="accessReason">Motivo de la solicitud</label>
-                        <textarea id="accessReason" rows="3" placeholder="Explique por qué necesita acceso a la plataforma" required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="modal-button">Enviar Solicitud</button>
-                </form>
-                <div class="modal-footer">
-                    <a href="#" id="backToLoginFromAccess">Volver al inicio de sesión</a>
-                </div>
-            </div>
         </div>
     </div>
     
     <script>
-    // Manejo del formulario de login
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
         const usuario = document.getElementById('usuario').value;
         const clave = document.getElementById('clave').value;
+        const errorElement = document.getElementById('loginError');
 
         fetch('/api/login', {
             method: 'POST',
@@ -695,50 +233,24 @@
         })
         .then(data => {
             if (data.success) {
-                // Guardar datos en localStorage
-                localStorage.setItem('nombre', data.nombre);
-                localStorage.setItem('cargo', data.cargo);
-                localStorage.setItem('cedula', data.cedula);
-                localStorage.setItem('correo', data.correo);
-                
                 // Redirigir al dashboard
                 window.location.href = "/dashboard";
             } else {
-                document.getElementById('loginError').textContent = data.message || 'Correo o contraseña incorrectas';
+                errorElement.textContent = data.message || 'Usuario o contraseña incorrectos';
             }
         })
         .catch(() => {
-            document.getElementById('loginError').textContent = 'Correo o contraseña incorrectas';
+            errorElement.textContent = 'Usuario o contraseña incorrectos';
         });
     });
 
-    // Crear partículas flotantes
-    function createParticles() {
-        const particles = document.getElementById('particles');
-        for (let i = 0; i < 20; i++) {
-            const particle = document.createElement('div');
-            particle.classList.add('particle');
-            particle.style.width = `${Math.random() * 10 + 5}px`;
-            particle.style.height = particle.style.width;
-            particle.style.left = `${Math.random() * 100}%`;
-            particle.style.top = `${Math.random() * 100}%`;
-            particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
-            particle.style.animationDelay = `${Math.random() * 5}s`;
-            particles.appendChild(particle);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', createParticles);
-    // Limpiar mensaje de error al escribir en los inputs
+    // Limpiar mensaje de error al escribir
     document.getElementById('usuario').addEventListener('input', function() {
         document.getElementById('loginError').textContent = '';
     });
     document.getElementById('clave').addEventListener('input', function() {
         document.getElementById('loginError').textContent = '';
     });
-</script>
-
-
-        
+    </script>
 </body>
 </html>
