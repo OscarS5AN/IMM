@@ -563,6 +563,7 @@
         </div>
         
         <div class="login-form">
+            <div id="loginError" style="color: #E2001A; text-align: center; margin-bottom: 10px;"></div>
             <form id="loginForm">
                 <div class="form-group">
                     <label for="usuario">Usuario</label>
@@ -703,12 +704,11 @@
                 // Redirigir al dashboard
                 window.location.href = "/dashboard";
             } else {
-                alert(data.message || 'Credenciales incorrectas');
+                document.getElementById('loginError').textContent = data.message || 'Correo o contraseña incorrectas';
             }
         })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error de conexión con el servidor. Por favor intente nuevamente.');
+        .catch(() => {
+            document.getElementById('loginError').textContent = 'Correo o contraseña incorrectas';
         });
     });
 
@@ -729,6 +729,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', createParticles);
+    // Limpiar mensaje de error al escribir en los inputs
+    document.getElementById('usuario').addEventListener('input', function() {
+        document.getElementById('loginError').textContent = '';
+    });
+    document.getElementById('clave').addEventListener('input', function() {
+        document.getElementById('loginError').textContent = '';
+    });
 </script>
 
 
