@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Técnicos | Mercado Masivo</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary-color: #d32f2f;
+            --primary-light: #ff6659;
+            --primary-dark: #9a0007;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --light-gray: #f9f9f9;
+            --border-color: #e0e0e0;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(211, 47, 47, 0.1);
+            border-top: 4px solid var(--primary-color);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .form-header h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .form-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+            border-radius: 3px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: var(--light-gray);
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+            outline: none;
+            background-color: white;
+        }
+        
+        input[type="text"] {
+            text-transform: uppercase;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 1rem;
+            grid-column: span 2;
+            box-shadow: 0 4px 6px rgba(211, 47, 47, 0.1);
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 6px 12px rgba(211, 47, 47, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .select2-container--default .select2-selection--single {
+            height: 46px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--light-gray);
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 46px;
+            padding-left: 1rem;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 44px;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary-color);
+        }
+        
+        .confirmation {
+            display: none;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+            animation: slideDown 0.5s ease-out;
+            box-shadow: 0 4px 6px rgba(76, 175, 80, 0.1);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            color: var(--primary-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        
+        .input-error {
+            border-color: var(--primary-color) !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            
+            .btn-submit {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1><i class="fas fa-user-cog"></i> Registro de Técnicos</h1>
+            <p>Complete el formulario para registrar un nuevo técnico</p>
+        </div>
+        
+        <form id="tecnicoForm" class="form-grid">
+            <!-- Datos personales -->
+            <div class="form-group">
+                <label for="cedula">Cédula:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="cedula" name="cedula" placeholder="Ej: 1234567890" required 
+                           pattern="[0-9]{6,12}" title="Ingrese solo números (6-12 dígitos)">
+                    <i class="fas fa-id-card input-icon"></i>
+                </div>
+                <div class="error-message" id="cedula-error">La cédula debe contener solo números (6-12 dígitos)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: JUAN PABLO" required
+                           pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" title="Ingrese solo letras">
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                <div class="error-message" id="nombre-error">Ingrese un nombre válido (solo letras)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="apellido">Apellido:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="apellido" name="apellido" placeholder="Ej: PÉREZ GÓMEZ" required
+                           pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" title="Ingrese solo letras">
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+                <div class="error-message" id="apellido-error">Ingrese un apellido válido (solo letras)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="telefono" name="telefono" placeholder="Ej: 3101234567" required
+                           pattern="[0-9]{7,12}" title="Ingrese solo números (7-12 dígitos)">
+                    <i class="fas fa-phone input-icon"></i>
+                </div>
+                <div class="error-message" id="telefono-error">Ingrese un teléfono válido (7-12 dígitos)</div>
+            </div>
+            
+            <!-- Selectores dinámicos -->
+            <div class="form-group">
+                <label for="ciudad">Ciudad:</label>
+                <select id="ciudad" name="ciudad" class="select2" required>
+                    <option value="">Seleccione una ciudad...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="aliado">Aliado:</label>
+                <select id="aliado" name="aliado" class="select2" required>
+                    <option value="">Seleccione un aliado...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="carpeta">Carpeta:</label>
+                <select id="carpeta" name="carpeta" class="select2" required>
+                    <option value="">Seleccione una carpeta...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado" class="select2" required>
+                    <option value="">Seleccione un estado...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="segmento">Segmento:</label>
+                <select id="segmento" name="segmento" class="select2" required>
+                    <option value="">Seleccione un segmento...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="supervisor">Supervisor:</label>
+                <select id="supervisor" name="supervisor" class="select2" required>
+                    <option value="">Seleccione un supervisor...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="interventor">Interventor:</label>
+                <select id="interventor" name="interventor" class="select2" required>
+                    <option value="">Seleccione un interventor...</option>
+                    <!-- Opciones se cargarán dinámicamente -->
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-save"></i> Registrar Técnico
+            </button>
+            
+            <div id="confirmation" class="confirmation">
+                <i class="fas fa-check-circle"></i> Los datos del técnico han sido registrados correctamente!
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.select2').select2({
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $(this).parent()
+            });
+            
+            // Cargar datos dinámicamente desde la API
+            function cargarParametros(tipo, selector) {
+                $.ajax({
+                    url: 'api/parametros.php',
+                    method: 'GET',
+                    data: { tipo: tipo },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.status === 'success') {
+                            $(selector).empty().append('<option value="">Seleccione...</option>');
+                            $.each(data.data, function(index, item) {
+                                $(selector).append(`<option value="${item.id_parametro}">${item.nombre_parametro}</option>`);
+                            });
+                        } else {
+                            console.error('Error al cargar ' + tipo + ':', data.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al cargar ' + tipo + ':', error);
+                    }
+                });
+            }
+            
+            // Cargar todos los parámetros necesarios
+            cargarParametros('Ciudad', '#ciudad');
+            cargarParametros('Aliado', '#aliado');
+            cargarParametros('Carpeta', '#carpeta');
+            cargarParametros('Estado', '#estado');
+            cargarParametros('Segmento', '#segmento');
+            cargarParametros('Supervisor', '#supervisor');
+            cargarParametros('Interventor', '#interventor');
+            
+            // Validación en tiempo real
+            $('input').on('input', function() {
+                validateField($(this));
+            });
+            
+            function validateField(field) {
+                const value = field.val();
+                const pattern = field.attr('pattern');
+                const errorElement = $(`#${field.attr('id')}-error`);
+                
+                if (field.attr('required')) {
+                    if (value === '') {
+                        field.addClass('input-error');
+                        errorElement.text('Este campo es requerido').show();
+                        return false;
+                    }
+                }
+                
+                if (pattern) {
+                    const regex = new RegExp(pattern);
+                    if (!regex.test(value)) {
+                        field.addClass('input-error');
+                        errorElement.show();
+                        return false;
+                    }
+                }
+                
+                field.removeClass('input-error');
+                errorElement.hide();
+                return true;
+            }
+            
+            // Manejar el envío del formulario
+            $('#tecnicoForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Validar todos los campos
+                let isValid = true;
+                $('input[required], select[required]').each(function() {
+                    if (!validateField($(this))) {
+                        isValid = false;
+                    }
+                });
+                
+                if (isValid) {
+                    // Mostrar animación de carga
+                    const submitBtn = $(this).find('button[type="submit"]');
+                    const originalText = submitBtn.html();
+                    submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Registrando...').prop('disabled', true);
+                    
+                    // Enviar datos por AJAX
+                    $.ajax({
+                        url: 'api/registrar_tecnico.php',
+                        method: 'POST',
+                        data: $(this).serialize(),
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                // Mostrar confirmación
+                                $('#confirmation').fadeIn();
+                                setTimeout(() => {
+                                    $('#confirmation').fadeOut();
+                                }, 3000);
+                                
+                                // Resetear formulario
+                                $('#tecnicoForm')[0].reset();
+                                $('.select2').val(null).trigger('change');
+                            } else {
+                                alert('Error: ' + response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Error de conexión: ' + error);
+                        },
+                        complete: function() {
+                            submitBtn.html(originalText).prop('disabled', false);
+                        }
+                    });
+                } else {
+                    // Mostrar mensaje de error general
+                    alert('Por favor complete todos los campos requeridos correctamente.');
+                }
+            });
+            
+            // Convertir a mayúsculas mientras se escribe
+            $('input[type="text"]').on('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        });
+    </script>
+</body>
+</html>

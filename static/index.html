@@ -22,8 +22,18 @@
             min-height: 100vh;
         }
         
+        .sidebar-logo-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            padding-bottom: 18px;
+            background: transparent;
+        }
         /* Menú lateral */
         .sidebar {
+            position: relative;
             width: 250px;
             background: linear-gradient(135deg, #c62828, #b71c1c);
             color: white;
@@ -282,7 +292,6 @@
                                 <span>Apariencia</span>
                             </a>
                         </div>
-                    
                     </div>
                 </div>
                 <div class="menu-item">
@@ -290,11 +299,12 @@
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Cerrar Sesion</span>
                             </a>
-                        </div>
+                </div>
             </div>
+            <div class="sidebar-logo-bottom">
+        <img src="static/images/ClaroLogoW.webp" alt="Logo Claro" style="max-width:120px;display:block;margin:20px auto 10px auto;">
+    </div>
         </div>
-        
-                <!-- ...existing code... -->
                 <!-- Contenido principal -->
                 <div class="main-content">
                     <div class="header">
@@ -361,7 +371,7 @@
                             e.preventDefault();
                             const contentArea = document.getElementById('contentArea');
                             contentArea.innerHTML = `
-                                <iframe src="Ssh.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                                <iframe src="static/Ssh.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
                             `;
                         });
                     }
@@ -373,26 +383,233 @@
                             e.preventDefault();
                             const contentArea = document.getElementById('contentArea');
                             contentArea.innerHTML = `
-                                <iframe src="RegistroTecnico.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                                <iframe src="static/RegistroTecnico.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
                             `;
                         });
                     }
             
-                    // Mostrar Perfil.html al hacer click en Perfil
-                    const perfilMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
-                        const icon = item.querySelector('i.fas.fa-user');
-                        // Evita que tome el botón de Registro de Técnicos
-                        return icon && !item.querySelector('span') || (icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Perfil');
-                    });
-                    if (perfilMenuItem) {
-                        perfilMenuItem.querySelector('a').addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const contentArea = document.getElementById('contentArea');
-                            contentArea.innerHTML = `
-                                <iframe src="Perfil.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
-                            `;
-                        });
-                    }
+            // Cerrar sesión al hacer click en "Cerrar Sesion" con confirmación modal
+            const cerrarSesionMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
+                const icon = item.querySelector('i.fas.fa-sign-out-alt');
+                return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Cerrar Sesion';
+            });
+            if (cerrarSesionMenuItem) {
+                cerrarSesionMenuItem.querySelector('a').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('logoutModal').style.display = 'flex';
+                });
+                document.getElementById('confirmLogout').onclick = function() {
+                    localStorage.clear();
+                    window.location.href = "/login";
+                };
+                document.getElementById('cancelLogout').onclick = function() {
+                    document.getElementById('logoutModal').style.display = 'none';
+                };
+            }
                 });
             </script>
-            <!-- ...existing code... -->
+        </div> 
+        <!-- Modal de confirmación de cierre de sesión -->
+        <div id="logoutModal" class="modal-overlay">
+            <div class="modal-container">
+                <h2 class="modal-title">¿Deseas cerrar sesión?</h2>
+                <p class="modal-subtitle">Estás a punto de salir de Mercado Masivo R3</p>
+                <div class="modal-actions">
+                    <button id="confirmLogout" class="btn-confirm">Confirmar</button>
+                    <button id="cancelLogout" class="btn-cancel">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInDown {
+            from { 
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes blurIn {
+            from { backdrop-filter: blur(0); }
+            to { backdrop-filter: blur(4px); }
+        }
+
+        /* Estilos del modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.7); /* Fondo blanco semitransparente */
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out, blurIn 0.3s ease-out;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            animation: slideInDown 0.3s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-title {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            font-weight: 500;
+        }
+
+        .modal-subtitle {
+            color: #666;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-confirm, .btn-cancel {
+            padding: 10px 28px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+            min-width: 120px;
+        }
+
+        .btn-confirm {
+            background: #E2001A;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #444;
+            transform: translateY(-1px);
+        }
+
+        .btn-confirm:active {
+            transform: translateY(0);
+        }
+
+        .btn-cancel {
+            background: transparent;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+            border-color: #ccc;
+        }
+
+        /* Efecto al cerrar */
+        .modal-closing {
+            animation: fadeOut 0.2s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .modal-container-closing {
+            animation: slideOutUp 0.2s ease-out forwards;
+        }
+
+        @keyframes slideOutUp {
+            from { 
+                transform: translateY(0);
+                opacity: 1;
+            }
+            to { 
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .modal-container {
+                padding: 24px;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .btn-confirm, .btn-cancel {
+                width: 100%;
+            }
+        }
+        </style>
+
+        <script>
+        // Función para mostrar el modal
+        function showLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            modal.style.display = 'flex';
+        }
+
+        // Función para ocultar el modal con animación
+        function hideLogoutModal() {
+            const modal = document.getElementById('logoutModal');
+            const container = modal.querySelector('.modal-container');
+            
+            modal.classList.add('modal-closing');
+            container.classList.add('modal-container-closing');
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('modal-closing');
+                container.classList.remove('modal-container-closing');
+            }, 200);
+        }
+
+        // Event listeners para los botones
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+            hideLogoutModal();
+            // Aquí iría la lógica para cerrar sesión
+            // window.location.href = '/logout';
+        });
+
+        document.getElementById('cancelLogout').addEventListener('click', function() {
+            hideLogoutModal();
+        });
+
+        // Cerrar al hacer clic fuera del modal
+        document.getElementById('logoutModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideLogoutModal();
+            }
+        });
+        </script>
+        
+</body>     
+</html>
