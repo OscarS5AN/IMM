@@ -6,8 +6,6 @@
     <title>Registro de Técnicos</title>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" href="static/images/logoclaroRedondo.png">
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
         
@@ -143,7 +141,7 @@
             font-size: 1rem;
             border-radius: 6px;
             cursor: pointer;
-            width: 100%;
+            width: auto;
             transition: all 0.3s ease;
             font-weight: 500;
             letter-spacing: 0.5px;
@@ -277,7 +275,7 @@
 
     <div class="container">
         <div class="form-header">
-            <h1><i class="fas fa-user-cog"></i> Registro de Técnicos</h1>
+            <h1> Registro de Técnicos</h1>
             <p>Complete el formulario para registrar un nuevo técnico</p>
         </div>
         
@@ -286,7 +284,7 @@
             <div class="form-group">
                 <label for="cedula">Cédula:</label>
                 <div class="input-wrapper">
-                    <input type="text" id="cedula" name="cedula" placeholder="Ej: 1234567890" required 
+                    <input type="text" id="cedula" name="cedula" placeholder="Ingrese la cedula" required 
                            pattern="[0-9]{6,12}" title="Ingrese solo números (6-12 dígitos)">
                     <i class="fas fa-id-card input-icon"></i>
                 </div>
@@ -296,7 +294,7 @@
             <div class="form-group">
                 <label for="nombre">Nombre:</label>
                 <div class="input-wrapper">
-                    <input type="text" id="nombre" name="nombre" placeholder="Ej: JUAN PABLO" required
+                    <input type="text" id="nombre" name="nombre" placeholder="Ingrese el nombre" required
                            pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" title="Ingrese solo letras">
                     <i class="fas fa-user input-icon"></i>
                 </div>
@@ -306,7 +304,7 @@
             <div class="form-group">
                 <label for="apellido">Apellido:</label>
                 <div class="input-wrapper">
-                    <input type="text" id="apellido" name="apellido" placeholder="Ej: PÉREZ GÓMEZ" required
+                    <input type="text" id="apellido" name="apellido" placeholder="Ingrese el apellido" required
                            pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" title="Ingrese solo letras">
                     <i class="fas fa-user input-icon"></i>
                 </div>
@@ -316,7 +314,7 @@
             <div class="form-group">
                 <label for="telefono">Teléfono:</label>
                 <div class="input-wrapper">
-                    <input type="text" id="telefono" name="telefono" placeholder="Ej: 3101234567" required
+                    <input type="text" id="telefono" name="telefono" placeholder="Digite el numero de telefono" required
                            pattern="[0-9]{7,12}" title="Ingrese solo números (7-12 dígitos)">
                     <i class="fas fa-phone input-icon"></i>
                 </div>
@@ -390,7 +388,6 @@
             // Inicializar Select2 con configuración mejorada
             $('.select2').select2({
                 placeholder: 'Seleccione una opción...',
-                allowClear: true,
                 width: '100%',
                 dropdownParent: $('.container'),
                 language: {

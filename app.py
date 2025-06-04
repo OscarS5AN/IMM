@@ -227,7 +227,7 @@ def register_technician():
             }), 500
 
         cursor = conn.cursor()
-        cursor.execute("SELECT cedula FROM registroTecnico WHERE cedula = %s", (data['cedula'],))
+        cursor.execute("SELECT cedula FROM registrotecnico WHERE cedula = %s", (data['cedula'],))
         if cursor.fetchone():
             return jsonify({
                 'success': False, 
@@ -235,7 +235,7 @@ def register_technician():
             }), 400
 
         query = """
-        INSERT INTO registroTecnico (
+        INSERT INTO registrotecnico (
             cedula, nombre, apellido, ciudad, telefono,
             idAliado, idSupervisor, idCarpeta, idEstado,
             idSegmento, idInterventor
@@ -265,7 +265,7 @@ def register_technician():
             'nombre': data['nombre'],
             'apellido': data['apellido']
         })
-        cursor.execute(log_query, ('REGISTRO_TECNICO', 'registroTecnico', technician_id, log_details))
+        cursor.execute(log_query, ('REGISTRO_TECNICO', 'registrotecnico', technician_id, log_details))
         conn.commit()
         return jsonify({
             'success': True, 
