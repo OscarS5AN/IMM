@@ -11,9 +11,9 @@ app.config['SESSION_COOKIE_DOMAIN'] = None
 
 # Configuración de la base de datos
 db_config = {
-    'host': '127.0.0.1',
+    'host': '186.81.194.142',
     'user': 'root',
-    'password': 'oscar.jaramillo123',
+    'password': 'Database',
     'database': 'mercadomasivo',
     'port': 3306,
     'autocommit': True,
@@ -85,6 +85,7 @@ def test_connection():
             'message': 'No se pudo conectar a la base de datos'
         }), 500
 
+# API para iniciar sesión
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
@@ -148,10 +149,76 @@ def login():
             cursor.close()
             conn.close()
 
+# API para obtener parámetros de registro técnico
+@app.route('/api/parametros', methods=['GET'])
+def obtener_parametros():
+    tipo = request.args.get('tipo')
+    if not tipo:
+        return jsonify({'success': False, 'message': 'Parámetro tipo requerido'}), 400
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión con la base de datos'}), 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        tablas = {
+            'Ciudad': ('SELECT id, nombre as nombre_parametro FROM ciudad', 'id'),
+            'Aliado': ('SELECT id, nombre as nombre_parametro FROM aliado', 'id'),
+            'Supervisor': ('SELECT id, nombre as nombre_parametro FROM supervisor', 'id'),
+            'Carpeta': ('SELECT id, nombre as nombre_parametro FROM carpeta', 'id'),
+            'Estado': ('SELECT id, nombre as nombre_parametro FROM estado', 'id'),
+            'Segmento': ('SELECT id, nombre as nombre_parametro FROM segmento', 'id'),
+            'Interventor': ('SELECT id, nombre as nombre_parametro FROM interventor', 'id')
+        }
+        if tipo not in tablas:
+            return jsonify({'success': False, 'message': 'Tipo de parámetro no válido'}), 400
+
+        query, id_field = tablas[tipo]
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        parametros = []
+        for row in resultados:
+            item = {
+                'nombre_parametro': row['nombre_parametro'],
+                'id_parametro': row[id_field] if id_field else row['nombre_parametro']
+            }
+            parametros.append(item)
+        return jsonify({'success': True, 'data': parametros})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error al obtener parámetros: {str(e)}'}), 500
+    finally:
+        if 'conn' in locals() and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+# API para registrar un técnico
 @app.route('/api/register_technician', methods=['POST'])
 def register_technician():
     try:
         data = request.get_json()
+        required_fields = ['cedula', 'nombre', 'apellido', 'ciudad', 'telefono',
+                          'idAliado', 'idSupervisor', 'idCarpeta', 'idEstado',
+                          'idSegmento', 'idInterventor']
+        missing_fields = [field for field in required_fields if field not in data or not data[field]]
+        if missing_fields:
+            return jsonify({
+                'success': False,
+                'message': f'Faltan campos requeridos: {", ".join(missing_fields)}'
+            }), 400
+
+        if not data['cedula'].isdigit() or len(data['cedula']) < 6 or len(data['cedula']) > 12:
+            return jsonify({
+                'success': False,
+                'message': 'La cédula debe contener solo números (6-12 dígitos)'
+            }), 400
+
+        if not data['telefono'].isdigit() or len(data['telefono']) < 7 or len(data['telefono']) > 12:
+            return jsonify({
+                'success': False,
+                'message': 'El teléfono debe contener solo números (7-12 dígitos)'
+            }), 400
+
         conn = get_db_connection()
         if not conn:
             return jsonify({
@@ -175,17 +242,36 @@ def register_technician():
         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
-            data['cedula'], data['nombre'], data['apellido'], 
-            data['ciudad'], data['telefono'],
-            data['idAliado'], data['idSupervisor'], data['idCarpeta'], 
-            data['idEstado'], data['idSegmento'], data['idInterventor']
+            data['cedula'], 
+            data['nombre'].strip().upper(), 
+            data['apellido'].strip().upper(),
+            data['ciudad'].strip().upper(), 
+            data['telefono'],
+            data['idAliado'], 
+            data['idSupervisor'], 
+            data['idCarpeta'], 
+            data['idEstado'], 
+            data['idSegmento'], 
+            data['idInterventor']
         ))
+        technician_id = cursor.lastrowid
+
+        log_query = """
+        INSERT INTO logs (accion, tabla_afectada, id_afectado, detalles)
+        VALUES (%s, %s, %s, %s)
+        """
+        log_details = json.dumps({
+            'cedula': data['cedula'],
+            'nombre': data['nombre'],
+            'apellido': data['apellido']
+        })
+        cursor.execute(log_query, ('REGISTRO_TECNICO', 'registroTecnico', technician_id, log_details))
         conn.commit()
         return jsonify({
             'success': True, 
-            'message': 'Técnico registrado exitosamente'
+            'message': 'Técnico registrado exitosamente',
+            'technician_id': technician_id
         })
-    
     except Exception as e:
         return jsonify({
             'success': False, 
@@ -196,6 +282,7 @@ def register_technician():
             cursor.close()
             conn.close()
 
+# API para crear un nuevo usuario
 @app.route('/api/create_user', methods=['POST'])
 def create_user():
     try:
@@ -242,7 +329,7 @@ def create_user():
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
-
+# API para obtener logs
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)

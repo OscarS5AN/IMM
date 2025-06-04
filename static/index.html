@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mercado Masivo</title>
+    <link rel="icon" type="image/png" href="static/images/logoclaroRedondo.png">
     <style>
         * {
             margin: 0;
@@ -88,7 +89,7 @@
             top: 0;
             width: 5px;
             height: 100%;
-            background-color: #ffeb3b;
+            background-color: #ffffff;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
         }
@@ -223,7 +224,7 @@
             </div>
             <div class="menu">
                 <div class="menu-item">
-                    <a href="#">
+                    <a href="#" id="homeBtn">
                         <i class="fas fa-home"></i>
                         <span>Inicio</span>
                     </a>
@@ -360,6 +361,16 @@
                             });
                         }
                     });
+
+                    // Mostrar contenido al hacer click en Inicio
+                    const homeBtn = document.getElementById('homeBtn');
+                    if (homeBtn) {
+                        homeBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            // Recarga la página para mostrar el dashboard inicial
+                            window.location.href = "/dashboard";
+                        });
+                    }
             
                     // Mostrar Ssh.html embebido al hacer click en SSH
                     const sshMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
