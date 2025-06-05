@@ -266,6 +266,29 @@
                 grid-column: span 1;
             }
         }
+        
+                /* Lupa roja dentro del campo search de Select2, alineada a la izquierda */
+        .select2-container .select2-search--dropdown {
+            position: relative;
+        }
+        .select2-container .select2-search--dropdown:before {
+            content: "\f002";
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            position: absolute;
+            left: 1em;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d32f2f; /* Rojo */
+            font-size: 1.1rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .select2-container .select2-search--dropdown .select2-search__field {
+            padding-left: 2.2em !important;
+        }
+       
+
     </style>
 </head>
 <body>
@@ -324,50 +347,43 @@
             <!-- Selectores dinámicos -->
             <div class="form-group">
                 <label for="ciudad">Ciudad:</label>
-                <select id="ciudad" name="ciudad" class="select2" required>
-                    <option value="">Seleccione una ciudad...</option>
+                <select id="ciudad" name="idiudad" class="select2" required>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="aliado">Aliado:</label>
                 <select id="aliado" name="idAliado" class="select2" required>
-                    <option value="">Seleccione un aliado...</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="carpeta">Carpeta:</label>
                 <select id="carpeta" name="idCarpeta" class="select2" required>
-                    <option value="">Seleccione una carpeta...</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="estado">Estado:</label>
                 <select id="estado" name="idEstado" class="select2" required>
-                    <option value="">Seleccione un estado...</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="segmento">Segmento:</label>
                 <select id="segmento" name="idSegmento" class="select2" required>
-                    <option value="">Seleccione un segmento...</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="supervisor">Supervisor:</label>
                 <select id="supervisor" name="idSupervisor" class="select2" required>
-                    <option value="">Seleccione un supervisor...</option>
                 </select>
             </div>
             
             <div class="form-group">
                 <label for="interventor">Interventor:</label>
                 <select id="interventor" name="idInterventor" class="select2" required>
-                    <option value="">Seleccione un interventor...</option>
                 </select>
             </div>
             
@@ -384,21 +400,25 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Inicializar Select2 con configuración mejorada
-            $('.select2').select2({
-                placeholder: 'Seleccione una opción...',
-                width: '100%',
-                dropdownParent: $('.container'),
-                language: {
-                    noResults: function() {
-                        return "No se encontraron resultados";
-                    },
-                    searching: function() {
-                        return "Buscando...";
-                    }
-                }
-            });
+           $(document).ready(function() {
+        // Inicialización global (puedes dejarla o quitarla si usas solo los personalizados)
+        $('.select2').select2({
+            width: '100%',
+            dropdownParent: $('.container'),
+            language: {
+                noResults: function() { return "No se encontraron resultados"; },
+                searching: function() { return "Buscando..."; }
+            }
+        });
+    
+        // Inicialización personalizada para cada select
+        $('#ciudad').select2({ placeholder: 'Seleccione una ciudad...', width: '100%', dropdownParent: $('.container') });
+        $('#aliado').select2({ placeholder: 'Seleccione un aliado...', width: '100%', dropdownParent: $('.container') });
+        $('#carpeta').select2({ placeholder: 'Seleccione una carpeta...', width: '100%', dropdownParent: $('.container') });
+        $('#estado').select2({ placeholder: 'Seleccione un estado...', width: '100%', dropdownParent: $('.container') });
+        $('#segmento').select2({ placeholder: 'Seleccione un segmento...', width: '100%', dropdownParent: $('.container') });
+        $('#supervisor').select2({ placeholder: 'Seleccione un supervisor...', width: '100%', dropdownParent: $('.container') });
+        $('#interventor').select2({ placeholder: 'Seleccione un interventor...', width: '100%', dropdownParent: $('.container') });
             
             // Mostrar/ocultar overlay de carga
             function toggleLoading(show) {
@@ -555,7 +575,7 @@
                     cedula: $('#cedula').val().trim(),
                     nombre: $('#nombre').val().trim(),
                     apellido: $('#apellido').val().trim(),
-                    ciudad: $('#ciudad').val().trim(),
+                    idCiudad: $('#ciudad').val().trim(),
                     telefono: $('#telefono').val().trim(),
                     idAliado: $('#aliado').val(),
                     idSupervisor: $('#supervisor').val(),

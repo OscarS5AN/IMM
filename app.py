@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for, send_from_directory
+from flask import Flask, request, jsonify, redirect, url_for, send_from_directory, session
 import mysql.connector
 from mysql.connector import Error
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,8 +8,9 @@ from datetime import datetime
 
 app = Flask(__name__, static_folder='static')
 app.config['SESSION_COOKIE_DOMAIN'] = None
+app.secret_key = 'clave-super-secreta-mercado-masivo'  # Necesario para usar sesiones
 
-# Configuración de la base de datos
+# ------------------- CONEXIÓN A BASE DE DATOS -------------------
 db_config = {
     'host': '186.81.194.142',
     'user': 'root',
@@ -33,8 +34,6 @@ def test_database_connection():
         conn = mysql.connector.connect(**db_config)
         if conn.is_connected():
             cursor = conn.cursor()
-            cursor.execute("SELECT VERSION()")
-            cursor.execute("SELECT DATABASE()")
             cursor.execute("SHOW TABLES")
             cursor.close()
             conn.close()
@@ -42,9 +41,9 @@ def test_database_connection():
     except Exception:
         return False
 
-# Verificar conexión al iniciar
 test_database_connection()
 
+# ------------------- RUTAS -------------------
 @app.route('/')
 def home():
     return redirect(url_for('serve_login'))
@@ -55,56 +54,29 @@ def serve_login():
 
 @app.route('/dashboard')
 def serve_dashboard():
+    if 'usuario_id' not in session:
+        return redirect(url_for('serve_login'))
     return send_from_directory('static', 'index.html')
 
-@app.route('/api/test-connection')
-def test_connection():
-    conn = get_db_connection()
-    if conn:
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT COUNT(*) FROM usuario")
-            user_count = cursor.fetchone()[0]
-            cursor.close()
-            conn.close()
-            return jsonify({
-                'success': True,
-                'message': 'Conexión exitosa',
-                'database': db_config['database'],
-                'host': db_config['host'],
-                'user_count': user_count
-            })
-        except Exception as e:
-            return jsonify({
-                'success': False,
-                'message': f'Error en consulta: {str(e)}'
-            }), 500
-    else:
-        return jsonify({
-            'success': False,
-            'message': 'No se pudo conectar a la base de datos'
-        }), 500
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('serve_login'))
 
-# API para iniciar sesión
+# ------------------- API -------------------
 @app.route('/api/login', methods=['POST'])
 def login():
     try:
         data = request.get_json()
         if not data or 'usuario' not in data or 'clave' not in data:
-            return jsonify({
-                'success': False, 
-                'message': 'Datos incompletos. Se requiere usuario y contraseña.'
-            }), 400
+            return jsonify({'success': False, 'message': 'Datos incompletos.'}), 400
 
         usuario_input = data['usuario'].strip()
         clave_input = data['clave'].strip()
 
         conn = get_db_connection()
         if not conn:
-            return jsonify({
-                'success': False, 
-                'message': 'Error de conexión con la base de datos'
-            }), 500
+            return jsonify({'success': False, 'message': 'Error de conexión'}), 500
 
         cursor = conn.cursor(dictionary=True)
         query = """
@@ -116,8 +88,10 @@ def login():
         cursor.execute(query, (usuario_input, usuario_input))
         user = cursor.fetchone()
 
-        # Unifica el mensaje para usuario o contraseña incorrectos
         if user and check_password_hash(user['clave'], clave_input):
+            # ✅ Guardar sesión
+            session['usuario_id'] = user['idusuario']
+            session['nombre'] = user['nombre']
             return jsonify({
                 'success': True,
                 'message': 'Login exitoso',
@@ -134,22 +108,15 @@ def login():
                 }
             })
         else:
-            return jsonify({
-                'success': False, 
-                'message': 'Correo o contraseña incorrectas'
-            }), 401
+            return jsonify({'success': False, 'message': 'Correo o contraseña incorrectas'}), 401
 
     except Exception:
-        return jsonify({
-            'success': False, 
-            'message': 'Correo o contraseña incorrectas'
-        }), 401
+        return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
     finally:
         if 'conn' in locals() and conn.is_connected():
             cursor.close()
             conn.close()
 
-# API para obtener parámetros de registro técnico
 @app.route('/api/parametros', methods=['GET'])
 def obtener_parametros():
     tipo = request.args.get('tipo')
@@ -158,7 +125,7 @@ def obtener_parametros():
 
     conn = get_db_connection()
     if not conn:
-        return jsonify({'success': False, 'message': 'Error de conexión con la base de datos'}), 500
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
 
     try:
         cursor = conn.cursor(dictionary=True)
@@ -171,171 +138,79 @@ def obtener_parametros():
             'Segmento': ('SELECT id, nombre as nombre_parametro FROM segmento', 'id'),
             'Interventor': ('SELECT id, nombre as nombre_parametro FROM interventor', 'id')
         }
+
         if tipo not in tablas:
-            return jsonify({'success': False, 'message': 'Tipo de parámetro no válido'}), 400
+            return jsonify({'success': False, 'message': 'Tipo inválido'}), 400
 
         query, id_field = tablas[tipo]
         cursor.execute(query)
         resultados = cursor.fetchall()
-        parametros = []
-        for row in resultados:
-            item = {
-                'nombre_parametro': row['nombre_parametro'],
-                'id_parametro': row[id_field] if id_field else row['nombre_parametro']
-            }
-            parametros.append(item)
+        parametros = [{'nombre_parametro': r['nombre_parametro'], 'id_parametro': r[id_field]} for r in resultados]
         return jsonify({'success': True, 'data': parametros})
+
     except Exception as e:
-        return jsonify({'success': False, 'message': f'Error al obtener parámetros: {str(e)}'}), 500
+        return jsonify({'success': False, 'message': str(e)}), 500
     finally:
-        if 'conn' in locals() and conn.is_connected():
+        if conn and conn.is_connected():
             cursor.close()
             conn.close()
 
-# API para registrar un técnico
 @app.route('/api/register_technician', methods=['POST'])
 def register_technician():
     try:
         data = request.get_json()
-        required_fields = ['cedula', 'nombre', 'apellido', 'ciudad', 'telefono',
-                          'idAliado', 'idSupervisor', 'idCarpeta', 'idEstado',
-                          'idSegmento', 'idInterventor']
-        missing_fields = [field for field in required_fields if field not in data or not data[field]]
-        if missing_fields:
-            return jsonify({
-                'success': False,
-                'message': f'Faltan campos requeridos: {", ".join(missing_fields)}'
-            }), 400
-
-        if not data['cedula'].isdigit() or len(data['cedula']) < 6 or len(data['cedula']) > 12:
-            return jsonify({
-                'success': False,
-                'message': 'La cédula debe contener solo números (6-12 dígitos)'
-            }), 400
-
-        if not data['telefono'].isdigit() or len(data['telefono']) < 7 or len(data['telefono']) > 12:
-            return jsonify({
-                'success': False,
-                'message': 'El teléfono debe contener solo números (7-12 dígitos)'
-            }), 400
+        required_fields = ['cedula', 'nombre', 'apellido', 'idCiudad', 'telefono',
+                           'idAliado', 'idSupervisor', 'idCarpeta', 'idEstado',
+                           'idSegmento', 'idInterventor']
+        missing = [f for f in required_fields if f not in data or not data[f]]
+        if missing:
+            return jsonify({'success': False, 'message': f'Faltan campos: {", ".join(missing)}'}), 400
 
         conn = get_db_connection()
         if not conn:
-            return jsonify({
-                'success': False, 
-                'message': 'Error de conexión con la base de datos'
-            }), 500
+            return jsonify({'success': False, 'message': 'Sin conexión DB'}), 500
 
         cursor = conn.cursor()
         cursor.execute("SELECT cedula FROM registrotecnico WHERE cedula = %s", (data['cedula'],))
         if cursor.fetchone():
-            return jsonify({
-                'success': False, 
-                'message': 'Ya existe un técnico con esta cédula'
-            }), 400
+            return jsonify({'success': False, 'message': 'Cédula ya registrada'}), 400
 
         query = """
-        INSERT INTO registrotecnico (
-            cedula, nombre, apellido, ciudad, telefono,
-            idAliado, idSupervisor, idCarpeta, idEstado,
-            idSegmento, idInterventor
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO registrotecnico (
+                cedula, nombre, apellido, telefono,
+                idAliado, idSupervisor, idCarpeta, idEstado,
+                idSegmento, idInterventor, idCiudad
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         cursor.execute(query, (
-            data['cedula'], 
-            data['nombre'].strip().upper(), 
-            data['apellido'].strip().upper(),
-            data['ciudad'].strip().upper(), 
+            data['cedula'], data['nombre'].upper(), data['apellido'].upper(),
             data['telefono'],
-            data['idAliado'], 
-            data['idSupervisor'], 
-            data['idCarpeta'], 
-            data['idEstado'], 
-            data['idSegmento'], 
-            data['idInterventor']
+            data['idAliado'], data['idSupervisor'], data['idCarpeta'],
+            data['idEstado'], data['idSegmento'], data['idInterventor'],
+            data['idCiudad']
         ))
-        technician_id = cursor.lastrowid
-
-        log_query = """
-        INSERT INTO logs (accion, tabla_afectada, id_afectado, detalles)
-        VALUES (%s, %s, %s, %s)
-        """
-        log_details = json.dumps({
-            'cedula': data['cedula'],
-            'nombre': data['nombre'],
-            'apellido': data['apellido']
-        })
-        cursor.execute(log_query, ('REGISTRO_TECNICO', 'registrotecnico', technician_id, log_details))
         conn.commit()
-        return jsonify({
-            'success': True, 
-            'message': 'Técnico registrado exitosamente',
-            'technician_id': technician_id
-        })
+        return jsonify({'success': True, 'message': 'Técnico registrado correctamente'})
+
     except Exception as e:
-        return jsonify({
-            'success': False, 
-            'message': f'Error al registrar técnico: {str(e)}'
-        }), 500
+        return jsonify({'success': False, 'message': str(e)}), 500
     finally:
-        if 'conn' in locals() and conn.is_connected():
+        if conn and conn.is_connected():
             cursor.close()
             conn.close()
 
-# API para crear un nuevo usuario
-@app.route('/api/create_user', methods=['POST'])
-def create_user():
-    try:
-        data = request.get_json()
-        conn = get_db_connection()
-        if not conn:
-            return jsonify({
-                'success': False, 
-                'message': 'Error de conexión con la base de datos'
-            }), 500
-
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT cedula FROM usuario WHERE cedula = %s OR correo = %s", 
-            (data['cedula'], data['correo'])
-        )
-        if cursor.fetchone():
-            return jsonify({
-                'success': False, 
-                'message': 'Ya existe un usuario con esta cédula o correo'
-            }), 400
-
-        hashed_password = generate_password_hash(data['clave'])
-        query = """
-        INSERT INTO usuario (cedula, nombre, apellido, cargo, correo, telefono, clave)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(query, (
-            data['cedula'], data['nombre'], data['apellido'],
-            data['cargo'], data['correo'], data['telefono'], hashed_password
-        ))
-        conn.commit()
-        return jsonify({
-            'success': True, 
-            'message': 'Usuario creado exitosamente'
-        })
-    
-    except Exception as e:
-        return jsonify({
-            'success': False, 
-            'message': f'Error al crear usuario: {str(e)}'
-        }), 500
-    finally:
-        if 'conn' in locals() and conn.is_connected():
-            cursor.close()
-            conn.close()
-# API para obtener logs
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
 
-from werkzeug.security import generate_password_hash
-print(generate_password_hash('admin123'))
+# ------------------- PREVENCIÓN DE CACHÉ -------------------
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '-1'
+    return response
 
+# ------------------- MAIN -------------------
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host='0.0.0.0')
