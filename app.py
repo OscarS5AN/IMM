@@ -89,7 +89,7 @@ def login():
         user = cursor.fetchone()
 
         if user and check_password_hash(user['clave'], clave_input):
-            # ✅ Guardar sesión
+            # Guardar sesión
             session['usuario_id'] = user['idusuario']
             session['nombre'] = user['nombre']
             return jsonify({
