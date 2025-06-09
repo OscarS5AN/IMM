@@ -133,23 +133,26 @@
             color: var(--primary-color);
         }
         
-        .btn-submit {
+            .btn-submit {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             color: white;
             border: none;
-            padding: 1rem;
-            font-size: 1rem;
+            padding: 0.75rem 1.5rem; /* Más ajustado para tamaño mediano */
+            font-size: 0.95rem; /* Ligeramente más pequeño */
             border-radius: 6px;
             cursor: pointer;
-            width: auto;
+            width: fit-content; /* Se adapta al contenido */
             transition: all 0.3s ease;
             font-weight: 500;
             letter-spacing: 0.5px;
             text-transform: uppercase;
             margin-top: 1rem;
-            grid-column: span 2;
+            grid-column: span 2; /* Conserva su posición en el grid */
             box-shadow: 0 4px 6px rgba(211, 47, 47, 0.1);
+            align-self: center; /* Centrado vertical en su celda si aplica */
+            justify-self: center; /* Centrado horizontal si estás usando grid */
         }
+
         
         .btn-submit:hover {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
@@ -238,14 +241,6 @@
             display: none;
         }
         
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -292,9 +287,6 @@
     </style>
 </head>
 <body>
-    <div class="loading-overlay">
-        <div class="spinner"></div>
-    </div>
 
     <div class="container">
         <div class="form-header">
@@ -564,11 +556,7 @@
                     return;
                 }
                 
-                // Mostrar animación de carga
-                const submitBtn = $(this).find('button[type="submit"]');
-                const originalText = submitBtn.html();
-                submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Registrando...').prop('disabled', true);
-                toggleLoading(true);
+                
                 
                 // Preparar datos para enviar
                 const formData = {

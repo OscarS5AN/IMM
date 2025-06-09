@@ -88,7 +88,7 @@
             left: 0;
             top: 0;
             width: 5px;
-            height: 100%;
+            height: 0%;
             background-color: #ffffff;
             transform: translateX(-100%);
             transition: transform 0.3s ease;
@@ -135,7 +135,7 @@
         /* Contenido principal */
         .main-content {
             flex: 1;
-            padding: 20px;
+            padding: 50px;
             background-color: white;
             box-shadow: inset 5px 0 15px rgba(0, 0, 0, 0.05);
         }
@@ -256,7 +256,7 @@
                 </div>
                 
                 <div class="menu-item">
-                    <a href="#">
+                    <a href="#" id="sshBtn">
                         <i class="fas fa-terminal"></i>
                         <span>SSH</span>
                     </a>
@@ -308,16 +308,13 @@
         </div>
                 <!-- Contenido principal -->
                 <div class="main-content">
-                    <div class="header">
+                    <div class="header" id="welcomeHeader">
                         <h3>Bienvenido a la Unidad De Mercado Masivo R3</h3>
-                        <div class="user-info">
-                            <img src="static/images/logoclaroRedondo.png" alt="Logo Claro" style="width:40px; height:40px; border-radius:50%;">
-                        </div>
                     </div>
                     
                     <div class="content" id="contentArea">
                         
-                        <div style="margin-top: 30px; padding: 20px; background: #ffebee; border-left: 4px solid #c62828;">
+                        <div style="margin-top: 10px; padding: 5px; background: #ffebee; border-left: 2px solid #c62828;">
                             <h3><i class="fas fa-info-circle"></i> Información importante</h3>
                             <p>Este diseño incluye todos los elementos solicitados con animaciones y efectos visuales en tonos rojos con sombras.</p>
                         </div>
@@ -329,6 +326,7 @@
                 // JavaScript para el menú desplegable
                 document.addEventListener('DOMContentLoaded', function() {
                     const menuItems = document.querySelectorAll('.has-submenu');
+                    const welcomeHeader = document.getElementById('welcomeHeader');
                     
                     menuItems.forEach(item => {
                         const link = item.querySelector('a');
@@ -366,19 +364,25 @@
                     if (homeBtn) {
                         homeBtn.addEventListener('click', function(e) {
                             e.preventDefault();
-                            // Recarga la página para mostrar el dashboard inicial
-                            window.location.href = "/dashboard";
+                            // Mostrar el header de bienvenida
+                            welcomeHeader.style.display = 'flex';
+                            // Limpiar el contenido y mostrar el dashboard inicial
+                            document.getElementById('contentArea').innerHTML = `
+                                <div style="margin-top: 30px; padding: 20px; background: #ffebee; border-left: 4px solid #c62828;">
+                                    <h3><i class="fas fa-info-circle"></i> Información importante</h3>
+                                    <p>Este diseño incluye todos los elementos solicitados con animaciones y efectos visuales en tonos rojos con sombras.</p>
+                                </div>
+                            `;
                         });
                     }
             
                     // Mostrar Ssh.html embebido al hacer click en SSH
-                    const sshMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
-                        const icon = item.querySelector('i.fas.fa-terminal');
-                        return icon;
-                    });
-                    if (sshMenuItem) {
-                        sshMenuItem.querySelector('a').addEventListener('click', function(e) {
+                    const sshBtn = document.getElementById('sshBtn');
+                    if (sshBtn) {
+                        sshBtn.addEventListener('click', function(e) {
                             e.preventDefault();
+                            // Ocultar el header de bienvenida
+                            welcomeHeader.style.display = 'none';
                             const contentArea = document.getElementById('contentArea');
                             contentArea.innerHTML = `
                                 <iframe src="static/Ssh.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
@@ -391,6 +395,8 @@
                     if (registroBtn) {
                         registroBtn.addEventListener('click', function(e) {
                             e.preventDefault();
+                            // Ocultar el header de bienvenida
+                            welcomeHeader.style.display = 'none';
                             const contentArea = document.getElementById('contentArea');
                             contentArea.innerHTML = `
                                 <iframe src="static/RegistroTecnico.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
@@ -398,24 +404,24 @@
                         });
                     }
             
-            // Cerrar sesión al hacer click en "Cerrar Sesion" con confirmación modal
-            const cerrarSesionMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
-                const icon = item.querySelector('i.fas.fa-sign-out-alt');
-                return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Cerrar Sesion';
-            });
-            if (cerrarSesionMenuItem) {
-                cerrarSesionMenuItem.querySelector('a').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.getElementById('logoutModal').style.display = 'flex';
-                });
-                document.getElementById('confirmLogout').onclick = function() {
-                    localStorage.clear();
-                    window.location.href = "/login";
-                };
-                document.getElementById('cancelLogout').onclick = function() {
-                    document.getElementById('logoutModal').style.display = 'none';
-                };
-            }
+                    // Cerrar sesión al hacer click en "Cerrar Sesion" con confirmación modal
+                    const cerrarSesionMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
+                        const icon = item.querySelector('i.fas.fa-sign-out-alt');
+                        return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Cerrar Sesion';
+                    });
+                    if (cerrarSesionMenuItem) {
+                        cerrarSesionMenuItem.querySelector('a').addEventListener('click', function(e) {
+                            e.preventDefault();
+                            document.getElementById('logoutModal').style.display = 'flex';
+                        });
+                        document.getElementById('confirmLogout').onclick = function() {
+                            localStorage.clear();
+                            window.location.href = "/login";
+                        };
+                        document.getElementById('cancelLogout').onclick = function() {
+                            document.getElementById('logoutModal').style.display = 'none';
+                        };
+                    }
                 });
             </script>
         </div> 
