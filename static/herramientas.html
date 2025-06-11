@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Herramientas</title>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --primary-color: #d32f2f;
+            --primary-light: #ff6659;
+            --primary-dark: #9a0007;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --light-gray: #f9f9f9;
+            --border-color: #e0e0e0;
+            --success-color: #4CAF50;
+            --error-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(211, 47, 47, 0.1);
+            border-top: 4px solid var(--primary-color);
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .form-header h1 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .search-section {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .info-section {
+            display: none;
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .info-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-label {
+            font-weight: 500;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+        
+        .info-value {
+            font-weight: 400;
+            color: var(--text-color);
+        }
+        
+        .tools-section {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background-color: var(--light-gray);
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
+            outline: none;
+            background-color: white;
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(211, 47, 47, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 6px 12px rgba(211, 47, 47, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background: #3d8b40;
+        }
+        
+        .table-container {
+            margin-top: 2rem;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-gray);
+        }
+        
+        tr:hover {
+            background-color: rgba(211, 47, 47, 0.05);
+        }
+        
+        .feedback-message {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1.5rem;
+            animation: slideDown 0.5s ease-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .feedback-success {
+            background: linear-gradient(135deg, var(--success-color), #2E7D32);
+            color: white;
+        }
+        
+        .feedback-error {
+            background: linear-gradient(135deg, var(--error-color), #c62828);
+            color: white;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        
+        .input-error {
+            border-color: var(--error-color) !important;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1>Registro de Herramientas</h1>
+            <p>Busque un técnico por cédula para registrar sus herramientas</p>
+        </div>
+        
+        <div class="search-section">
+            <div class="form-group">
+                <label for="cedula">Cédula del Técnico:</label>
+                <div class="input-wrapper">
+                    <input type="text" id="cedula" name="cedula" placeholder="Ingrese la cédula del técnico" 
+                           pattern="[0-9]{6,12}" title="Ingrese solo números (6-12 dígitos)">
+                    <i class="fas fa-search input-icon"></i>
+                </div>
+                <div class="error-message" id="cedula-error">La cédula debe contener solo números (6-12 dígitos)</div>
+            </div>
+            <button id="searchBtn" class="btn">
+                <i class="fas fa-search"></i> Buscar Técnico
+            </button>
+        </div>
+        
+        <div id="infoSection" class="info-section">
+            <h3>Información del Técnico</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value" id="nombre"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Apellido:</span>
+                    <span class="info-value" id="apellido"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Supervisor:</span>
+                    <span class="info-value" id="supervisor"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Ciudad:</span>
+                    <span class="info-value" id="ciudad"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Estado:</span>
+                    <span class="info-value" id="estado"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Aliado:</span>
+                    <span class="info-value" id="aliado"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div id="toolsSection" class="tools-section">
+            <div class="form-group">
+                <label for="tipoHerramienta">Tipo de Herramienta:</label>
+                <select id="tipoHerramienta" class="select2">
+                    <option value="">Seleccione un tipo de herramienta...</option>
+                    <option value="movil_elite_instalacion">Móvil Elite Instalación</option>
+                    <option value="movil_elite_mantenimiento">Móvil Elite Mantenimiento</option>
+                    <option value="movil_instalacion_en">Móvil Instalación EN</option>
+                    <option value="movil_mantenimiento_en">Móvil Mantenimiento EN</option>
+                    <option value="movil_instalaciones_fo">Móvil Instalaciones FO</option>
+                    <option value="movil_mantenimiento_drop_fo">Móvil Mantenimiento Drop FO</option>
+                    <option value="movil_instalacion_hfc">Móvil Instalación HFC</option>
+                    <option value="movil_mantenimiento_drop_hfc">Móvil Mantenimiento Drop HFC</option>
+                    <option value="movil_apoyo">Móvil Apoyo</option>
+                    <option value="supervisor_im">Supervisor IM</option>
+                    <option value="reconexiones_desconexiones">Reconexiones/Desconexiones</option>
+                    <option value="postventas">Postventas</option>
+                    <option value="vts_verificaciones">VTS Verificaciones</option>
+                </select>
+            </div>
+            
+            <div class="table-container">
+                <table id="herramientasTable">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Herramienta</th>
+                            <th>Cantidad Requerida</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="herramientasBody">
+                        <!-- Aquí se cargarán las herramientas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="form-group" style="margin-top: 2rem;">
+                <button id="saveBtn" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Registro
+                </button>
+            </div>
+        </div>
+        
+        <div id="feedback" class="feedback-message">
+            <i class="fas fa-check-circle"></i> <span id="feedback-text"></span>
+        </div>
+    </div>
+
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2
+            $('.select2').select2({
+                width: '100%',
+                dropdownParent: $('.container')
+            });
+            
+            // Variables globales
+            let currentTechnician = null;
+            let currentTools = [];
+            
+            // Mostrar/ocultar overlay de carga
+            function toggleLoading(show) {
+                if (show) {
+                    $('.loading-overlay').fadeIn();
+                } else {
+                    $('.loading-overlay').fadeOut();
+                }
+            }
+            
+            // Mostrar mensaje de feedback
+            function showFeedback(message, isSuccess) {
+                const feedback = $('#feedback');
+                const feedbackText = $('#feedback-text');
+                
+                feedback.removeClass('feedback-success feedback-error');
+                feedback.addClass(isSuccess ? 'feedback-success' : 'feedback-error');
+                
+                feedbackText.html(message);
+                feedback.find('i').attr('class', 
+                    isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-circle');
+                
+                feedback.fadeIn();
+                
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    feedback.fadeOut();
+                }, 5000);
+            }
+            
+            // Validar campo cédula
+            function validateCedula() {
+                const cedula = $('#cedula').val().trim();
+                const pattern = /^[0-9]{6,12}$/;
+                
+                if (!pattern.test(cedula)) {
+                    $('#cedula').addClass('input-error');
+                    $('#cedula-error').show();
+                    return false;
+                } else {
+                    $('#cedula').removeClass('input-error');
+                    $('#cedula-error').hide();
+                    return true;
+                }
+            }
+            
+            // Buscar técnico por cédula
+            $('#searchBtn').click(function() {
+                if (!validateCedula()) {
+                    return;
+                }
+                
+                const cedula = $('#cedula').val().trim();
+                toggleLoading(true);
+                
+                $.ajax({
+                    url: '/api/get_technician',
+                    method: 'GET',
+                    data: { cedula: cedula },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            currentTechnician = response.data;
+                            
+                            // Mostrar información del técnico
+                            $('#nombre').text(currentTechnician.nombre);
+                            $('#apellido').text(currentTechnician.apellido);
+                            $('#supervisor').text(currentTechnician.supervisor || 'No especificado');
+                            $('#ciudad').text(currentTechnician.ciudad || 'No especificado');
+                            $('#estado').text(currentTechnician.estado || 'No especificado');
+                            $('#aliado').text(currentTechnician.aliado || 'No especificado');
+                            
+                            $('#infoSection').fadeIn();
+                            $('#toolsSection').fadeIn();
+                            
+                            showFeedback('Técnico encontrado correctamente', true);
+                        } else {
+                            $('#infoSection').hide();
+                            $('#toolsSection').hide();
+                            showFeedback(response.message, false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#infoSection').hide();
+                        $('#toolsSection').hide();
+                        showFeedback('Error al buscar técnico: ' + error, false);
+                    },
+                    complete: function() {
+                        toggleLoading(false);
+                    }
+                });
+            });
+            
+            // Cargar herramientas según tipo seleccionado
+            $('#tipoHerramienta').change(function() {
+                const tipo = $(this).val();
+                if (!tipo || !currentTechnician) return;
+                
+                toggleLoading(true);
+                
+                $.ajax({
+                    url: '/api/get_tools',
+                    method: 'GET',
+                    data: { tipo: tipo },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            currentTools = response.data;
+                            renderToolsTable();
+                        } else {
+                            showFeedback(response.message, false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showFeedback('Error al cargar herramientas: ' + error, false);
+                    },
+                    complete: function() {
+                        toggleLoading(false);
+                    }
+                });
+            });
+            
+            // Renderizar tabla de herramientas
+            function renderToolsTable() {
+                const tbody = $('#herramientasBody');
+                tbody.empty();
+                
+                currentTools.forEach(tool => {
+                    const row = $('<tr></tr>');
+                    
+                    row.append($('<td></td>').text(tool.grupo));
+                    row.append($('<td></td>').text(tool.herramienta));
+                    row.append($('<td></td>').text(tool.cantidad));
+                    
+                    // Selector de estado
+                    const estadoSelect = $('<select></select>')
+                        .addClass('estado-select')
+                        .data('idherramienta', tool.idherramienta)
+                        .append($('<option></option>').val('').text('Seleccione...'))
+                        .append($('<option></option>').val('cumple').text('Cumple'))
+                        .append($('<option></option>').val('no_cumple').text('No cumple'));
+                    
+                    // Si ya tiene un estado asignado, seleccionarlo
+                    if (tool.estado) {
+                        estadoSelect.val(tool.estado);
+                    }
+                    
+                    row.append($('<td></td>').append(estadoSelect));
+                    
+                    tbody.append(row);
+                });
+            }
+            
+            // Guardar registro de herramientas
+            $('#saveBtn').click(function() {
+                if (!currentTechnician || !currentTools.length) {
+                    showFeedback('No hay datos para guardar', false);
+                    return;
+                }
+                
+                const registros = [];
+                let hasErrors = false;
+                
+                // Recolectar datos de la tabla
+                $('.estado-select').each(function() {
+                    const estado = $(this).val();
+                    const idherramienta = $(this).data('idherramienta');
+                    
+                    if (!estado) {
+                        hasErrors = true;
+                        $(this).addClass('input-error');
+                    } else {
+                        $(this).removeClass('input-error');
+                        
+                        registros.push({
+                            idherramienta: idherramienta,
+                            estado: estado
+                        });
+                    }
+                });
+                
+                if (hasErrors) {
+                    showFeedback('Por favor seleccione el estado para todas las herramientas', false);
+                    return;
+                }
+                
+                toggleLoading(true);
+                
+                // Enviar datos al servidor
+                $.ajax({
+                    url: '/api/save_tools',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        idregistroTecnico: currentTechnician.idregistroTecnico,
+                        herramientas: registros
+                    }),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showFeedback('Registro de herramientas guardado correctamente', true);
+                        } else {
+                            showFeedback(response.message, false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showFeedback('Error al guardar: ' + error, false);
+                    },
+                    complete: function() {
+                        toggleLoading(false);
+                    }
+                });
+            });
+            
+            // Validar cédula mientras se escribe
+            $('#cedula').on('input', function() {
+                validateCedula();
+            });
+        });
+    </script>
+</body>
+</html>
