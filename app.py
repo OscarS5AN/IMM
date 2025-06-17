@@ -203,7 +203,8 @@ def register_technician():
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
 
-# ------------------- HERRAMIENTAS REPORTES -------------------
+
+# ------------------- NUEVAS RUTAS PARA HERRAMIENTAS -------------------
 @app.route('/api/get_technician', methods=['GET'])
 def get_technician():
     cedula = request.args.get('cedula')
@@ -217,21 +218,23 @@ def get_technician():
     try:
         cursor = conn.cursor(dictionary=True)
         query = """
-            SELECT rt.idregistroTecnico, rt.cedula, rt.nombre, rt.apellido, rt.telefono,
-                   a.nombre as aliado, s.nombre as supervisor, c.nombre as ciudad,
-                   e.nombre as estado
-            FROM registrotecnico rt
-            LEFT JOIN aliado a ON rt.idAliado = a.id
-            LEFT JOIN supervisor s ON rt.idSupervisor = s.id
-            LEFT JOIN ciudad c ON rt.idCiudad = c.id
-            LEFT JOIN estado e ON rt.idEstado = e.id
-            WHERE rt.cedula = %s
+            SELECT r.idregistroTecnico, r.nombre, r.apellido, r.telefono,
+                   c.nombre as ciudad, a.nombre as aliado, s.nombre as supervisor
+            FROM registrotecnico r
+            LEFT JOIN ciudad c ON r.idCiudad = c.id
+            LEFT JOIN aliado a ON r.idAliado = a.id
+            LEFT JOIN supervisor s ON r.idSupervisor = s.id
+            WHERE r.cedula = %s
+            LIMIT 1
         """
         cursor.execute(query, (cedula,))
-        tecnico = cursor.fetchone()
+        technician = cursor.fetchone()
 
-        if tecnico:
-            return jsonify({'success': True, 'data': tecnico})
+        if technician:
+            return jsonify({
+                'success': True,
+                'technician': technician
+            })
         else:
             return jsonify({'success': False, 'message': 'Técnico no encontrado'}), 404
 
@@ -242,11 +245,37 @@ def get_technician():
             cursor.close()
             conn.close()
 
-@app.route('/api/get_tools', methods=['GET'])
-def get_tools():
-    tipo = request.args.get('tipo')
-    if not tipo:
-        return jsonify({'success': False, 'message': 'Tipo de herramienta requerido'}), 400
+@app.route('/api/get_tools_by_group', methods=['GET'])
+def get_tools_by_group():
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT * FROM herramientas ORDER BY grupo, herramienta"
+        cursor.execute(query)
+        herramientas = cursor.fetchall()
+
+        return jsonify({
+            'success': True,
+            'herramientas': herramientas
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+@app.route('/api/get_tools_status', methods=['GET'])
+def get_tools_status():
+    tecnicoId = request.args.get('tecnicoId')
+    carpeta = request.args.get('carpeta')
+    
+    if not tecnicoId or not carpeta:
+        return jsonify({'success': False, 'message': 'Parámetros requeridos'}), 400
 
     conn = get_db_connection()
     if not conn:
@@ -255,23 +284,16 @@ def get_tools():
     try:
         cursor = conn.cursor(dictionary=True)
         query = """
-            SELECT idherramienta, herramienta, grupo, {} as cantidad
-            FROM herramientas
-            WHERE {} > 0
-            ORDER BY grupo, herramienta
-        """.format(tipo, tipo)
-        
-        cursor.execute(query)
-        herramientas = cursor.fetchall()
-        
+            SELECT idherramienta, estado 
+            FROM R_HI 
+            WHERE idregistroTecnico = %s AND carpeta = %s
+        """
+        cursor.execute(query, (tecnicoId, carpeta))
+        estados = cursor.fetchall()
+
         return jsonify({
             'success': True,
-            'data': [{
-                'idherramienta': h['idherramienta'],
-                'herramienta': h['herramienta'],
-                'grupo': h['grupo'],
-                'cantidad': h['cantidad']
-            } for h in herramientas]
+            'estados': estados
         })
 
     except Exception as e:
@@ -285,12 +307,17 @@ def get_tools():
 def save_tools():
     try:
         data = request.get_json()
-        if not data or 'idregistroTecnico' not in data or 'herramientas' not in data:
+        if not data or 'idregistroTecnico' not in data or 'herramientas' not in data or 'carpeta' not in data:
             return jsonify({'success': False, 'message': 'Datos incompletos'}), 400
 
         idregistroTecnico = data['idregistroTecnico']
         herramientas = data['herramientas']
-        idusuario = session.get('usuario_id', 1)  # Usar 1 como default si no hay sesión
+        carpeta = data['carpeta']
+        
+        # Obtener el ID de usuario de la sesión o usar un valor por defecto
+        idusuario = session.get('usuario_id')
+        if not idusuario:
+            return jsonify({'success': False, 'message': 'Usuario no autenticado'}), 401
 
         if not herramientas:
             return jsonify({'success': False, 'message': 'No hay herramientas para guardar'}), 400
@@ -301,28 +328,50 @@ def save_tools():
 
         cursor = conn.cursor()
         
-        # Primero eliminamos registros existentes para este técnico
-        cursor.execute("DELETE FROM R_HI WHERE idregistroTecnico = %s", (idregistroTecnico,))
+        # Primero eliminamos registros existentes para este técnico y carpeta
+        cursor.execute("""
+            DELETE FROM R_HI 
+            WHERE idregistroTecnico = %s AND carpeta = %s
+        """, (idregistroTecnico, carpeta))
         
-        # Insertamos los nuevos registros
+        # Insertamos los nuevos registros con todos los campos requeridos
         for herramienta in herramientas:
             query = """
-                INSERT INTO R_HI (idregistroTecnico, idherramienta, estado, carpeta, idusuario)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO R_HI (
+                    idregistroTecnico, 
+                    idherramienta, 
+                    estado, 
+                    carpeta, 
+                    idusuario, 
+                    fecha
+                ) VALUES (%s, %s, %s, %s, %s, NOW())
             """
             cursor.execute(query, (
                 idregistroTecnico,
                 herramienta['idherramienta'],
                 herramienta['estado'],
-                'Herramientas',  # Valor fijo para carpeta
+                carpeta,
                 idusuario
             ))
         
         conn.commit()
-        return jsonify({'success': True, 'message': 'Herramientas guardadas correctamente'})
+        return jsonify({
+            'success': True, 
+            'message': 'Herramientas guardadas correctamente',
+            'details': {
+                'tecnico': idregistroTecnico,
+                'carpeta': carpeta,
+                'herramientas_guardadas': len(herramientas),
+                'usuario': idusuario
+            }
+        })
 
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return jsonify({
+            'success': False, 
+            'message': 'Error al guardar herramientas',
+            'error': str(e)
+        }), 500
     finally:
         if conn and conn.is_connected():
             cursor.close()

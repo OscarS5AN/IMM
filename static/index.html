@@ -212,6 +212,74 @@
                 display: inline;
             }
         }
+
+        /* Estilos para el modal de confirmación */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            max-width: 90%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #c62828;
+        }
+
+        .modal-message {
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .modal-button.confirm {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .modal-button.confirm:hover {
+            background-color: #b71c1c;
+        }
+
+        .modal-button.cancel {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .modal-button.cancel:hover {
+            background-color: #d0d0d0;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -262,385 +330,204 @@
                 </div>
                 
                 <div class="menu-item">
-                    <a href="#">
+                    <a href="#" id="perfilBtn">
                         <i class="fas fa-user"></i>
                         <span>Perfil</span>
                     </a>
                 </div>
-                <!-- <div class="menu-item has-submenu">
-                    <a href="#">
-                        <i class="fas fa-cog"></i>
-                        <span>Configuración</span>
-                    </a>
-                    <div class="submenu">
-                        <div class="menu-item">
-                            <a href="#">
-                                <i class="fas fa-user-shield"></i>
-                                <span>Seguridad</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a href="#">
-                                <i class="fas fa-bell"></i>
-                                <span>Notificaciones</span>
-                            </a>
-                        </div>
-                        <div class="menu-item">
-                            <a href="#">
-                                <i class="fas fa-palette"></i>
-                                <span>Apariencia</span>
-                            </a>
-                        </div>
-                    </div>
-                </div> -->
                 
                 <div class="menu-item">
-                            <a href="#">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Cerrar Sesion</span>
-                            </a>
+                    <a href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
                 </div>
             </div>
             <div class="sidebar-logo-bottom">
-<img src="static/images/ClaroLogoW.webp" alt="Logo Claro" style="max-width:114px;display:block;margin:20px auto 10px auto;">
-    </div>
+                <img src="static/images/ClaroLogoW.webp" alt="Logo Claro" style="max-width:114px;display:block;margin:20px auto 10px auto;">
+            </div>
         </div>
-                <!-- Contenido principal -->
-                <div class="main-content">
-                    <div class="header" id="welcomeHeader">
-                        <h3>Bienvenido a la Unidad De Mercado Masivo R3</h3>
-                    </div>
+        
+        <!-- Contenido principal -->
+        <div class="main-content">
+            <div class="header" id="welcomeHeader">
+                <h3>Bienvenido a la Unidad De Mercado Masivo R3</h3>
+            </div>
+            
+            <div class="content" id="contentArea">
+                <div style="margin-top: 10px; padding: 5px; background: #ffebee; border-left: 2px solid #c62828;">
+                    <h3><i class="fas fa-info-circle"></i> Información importante</h3>
+                    <p>Este diseño incluye todos los elementos solicitados con animaciones y efectos visuales en tonos rojos con sombras.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de confirmación de cierre de sesión -->
+    <div id="logoutModal" class="modal-overlay">
+        <div class="modal-container">
+            <h3 class="modal-title">¿Estás seguro de cerrar sesión?</h3>
+            <p class="modal-message">Serás redirigido a la página de inicio de sesión.</p>
+            <div class="modal-buttons">
+                <button id="confirmLogout" class="modal-button confirm">Confirmar</button>
+                <button id="cancelLogout" class="modal-button cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript para el menú desplegable
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.has-submenu');
+            const welcomeHeader = document.getElementById('welcomeHeader');
+            
+            menuItems.forEach(item => {
+                const link = item.querySelector('a');
+                
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
                     
-                    <div class="content" id="contentArea">
-                        
-                        <div style="margin-top: 10px; padding: 5px; background: #ffebee; border-left: 2px solid #c62828;">
+                    // Cerrar otros submenús
+                    menuItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                            otherItem.querySelector('.submenu').classList.remove('active');
+                        }
+                    });
+                    
+                    // Alternar submenú actual
+                    item.classList.toggle('active');
+                    const submenu = item.querySelector('.submenu');
+                    submenu.classList.toggle('active');
+                });
+            });
+            
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.has-submenu')) {
+                    menuItems.forEach(item => {
+                        item.classList.remove('active');
+                        item.querySelector('.submenu').classList.remove('active');
+                    });
+                }
+            });
+
+            // Mostrar contenido al hacer click en Inicio
+            const homeBtn = document.getElementById('homeBtn');
+            if (homeBtn) {
+                homeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Mostrar el header de bienvenida
+                    welcomeHeader.style.display = 'flex';
+                    // Limpiar el contenido y mostrar el dashboard inicial
+                    document.getElementById('contentArea').innerHTML = `
+                        <div style="margin-top: 30px; padding: 20px; background: #ffebee; border-left: 4px solid #c62828;">
                             <h3><i class="fas fa-info-circle"></i> Información importante</h3>
                             <p>Este diseño incluye todos los elementos solicitados con animaciones y efectos visuales en tonos rojos con sombras.</p>
                         </div>
-                    </div>
-                </div>
-            </div>
-            
-            <script>
-                // JavaScript para el menú desplegable
-                document.addEventListener('DOMContentLoaded', function() {
-                    const menuItems = document.querySelectorAll('.has-submenu');
-                    const welcomeHeader = document.getElementById('welcomeHeader');
-                    
-                    menuItems.forEach(item => {
-                        const link = item.querySelector('a');
-                        
-                        link.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            
-                            // Cerrar otros submenús
-                            menuItems.forEach(otherItem => {
-                                if (otherItem !== item) {
-                                    otherItem.classList.remove('active');
-                                    otherItem.querySelector('.submenu').classList.remove('active');
-                                }
-                            });
-                            
-                            // Alternar submenú actual
-                            item.classList.toggle('active');
-                            const submenu = item.querySelector('.submenu');
-                            submenu.classList.toggle('active');
-                        });
-                    });
-                    
-                    // Cerrar menú al hacer clic fuera
-                    document.addEventListener('click', function(e) {
-                        if (!e.target.closest('.has-submenu')) {
-                            menuItems.forEach(item => {
-                                item.classList.remove('active');
-                                item.querySelector('.submenu').classList.remove('active');
-                            });
-                        }
-                    });
-
-                    // Mostrar contenido al hacer click en Inicio
-                    const homeBtn = document.getElementById('homeBtn');
-                    if (homeBtn) {
-                        homeBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            // Mostrar el header de bienvenida
-                            welcomeHeader.style.display = 'flex';
-                            // Limpiar el contenido y mostrar el dashboard inicial
-                            document.getElementById('contentArea').innerHTML = `
-                                <div style="margin-top: 30px; padding: 20px; background: #ffebee; border-left: 4px solid #c62828;">
-                                    <h3><i class="fas fa-info-circle"></i> Información importante</h3>
-                                    <p>Este diseño incluye todos los elementos solicitados con animaciones y efectos visuales en tonos rojos con sombras.</p>
-                                </div>
-                            `;
-                        });
-                    }
-            
-                    // Mostrar Ssh.html embebido al hacer click en SSH
-                    const sshBtn = document.getElementById('sshBtn');
-                    if (sshBtn) {
-                        sshBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            // Ocultar el header de bienvenida
-                            welcomeHeader.style.display = 'none';
-                            const contentArea = document.getElementById('conetntArea');
-                            contentArea.innerHTML = `
-                                <iframe src="static/Ssh.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
-                            `;
-                        });
-                    }
-            
-                    // Mostrar RegistroTecnico.html al hacer click en Registro de Técnicos
-                    const registroBtn = document.getElementById('registroTecnicosBtn');
-                    if (registroBtn) {
-                        registroBtn.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            // Ocultar el header de bienvenida
-                            welcomeHeader.style.display = 'none';
-                            const contentArea = document.getElementById('contentArea');
-                            contentArea.innerHTML = `
-                                <iframe src="static/RegistroTecnico.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
-                            `;
-                        });
-                    }
-            
-                    // Mostrar Herramientas.html al hacer click en Herramientas
-                    const herramientasMenu = Array.from(document.querySelectorAll('.menu-item')).find(item => {
-                        const icon = item.querySelector('i.fas.fa-tools');
-                        return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Herramientas';
-                    });
-                    if (herramientasMenu) {
-                        herramientasMenu.querySelector('a').addEventListener('click', function(e) {
-                            e.preventDefault();
-                            welcomeHeader.style.display = 'none';
-                            const contentArea = document.getElementById('contentArea');
-                            contentArea.innerHTML = `
-                                <iframe src="static/herramientas.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
-                            `;
-                        });
-                    }
-            
-                    // Cerrar sesión al hacer click en "Cerrar Sesion" con confirmación modal
-                    const cerrarSesionMenuItem = Array.from(document.querySelectorAll('.menu-item')).find(item => {
-                        const icon = item.querySelector('i.fas.fa-sign-out-alt');
-                        return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Cerrar Sesion';
-                    });
-                    if (cerrarSesionMenuItem) {
-                        cerrarSesionMenuItem.querySelector('a').addEventListener('click', function(e) {
-                            e.preventDefault();
-                            document.getElementById('logoutModal').style.display = 'flex';
-                        });
-                        document.getElementById('confirmLogout').onclick = function() {
-                            localStorage.clear();
-                            window.location.href = "/login";
-                        };
-                        document.getElementById('cancelLogout').onclick = function() {
-                            document.getElementById('logoutModal').style.display = 'none';
-                        };
-                    }
+                    `;
                 });
-            </script>
-        </div> 
-        <!-- Modal de confirmación de cierre de sesión -->
-        <div id="logoutModal" class="modal-overlay">
-            <div class="modal-container">
-                <h2 class="modal-title">¿Deseas cerrar sesión?</h2>
-                <p class="modal-subtitle">Estás a punto de salir de Mercado Masivo R3</p>
-                <div class="modal-actions">
-                    <button id="confirmLogout" class="btn-confirm">Confirmar</button>
-                    <button id="cancelLogout" class="btn-cancel">Cancelar</button>
-                </div>
-            </div>
-        </div>
-
-        <style>
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInDown {
-            from { 
-                transform: translateY(-20px);
-                opacity: 0;
             }
-            to { 
-                transform: translateY(0);
-                opacity: 1;
+    
+            // Mostrar Ssh.html embebido al hacer click en SSH
+            const sshBtn = document.getElementById('sshBtn');
+            if (sshBtn) {
+                sshBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Ocultar el header de bienvenida
+                    welcomeHeader.style.display = 'none';
+                    const contentArea = document.getElementById('contentArea');
+                    contentArea.innerHTML = `
+                        <iframe src="static/Ssh.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                    `;
+                });
             }
-        }
-
-        @keyframes blurIn {
-            from { backdrop-filter: blur(0); }
-            to { backdrop-filter: blur(4px); }
-        }
-
-        /* Estilos del modal */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(255, 255, 255, 0.7); /* Fondo blanco semitransparente */
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease-out, blurIn 0.3s ease-out;
-            backdrop-filter: blur(4px);
-        }
-
-        .modal-container {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            padding: 32px;
-            max-width: 380px;
-            width: 90%;
-            text-align: center;
-            animation: slideInDown 0.3s ease-out;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .modal-title {
-            color: #333;
-            margin-bottom: 12px;
-            font-size: 1.4rem;
-            font-weight: 500;
-        }
-
-        .modal-subtitle {
-            color: #666;
-            margin-bottom: 28px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .btn-confirm, .btn-cancel {
-            padding: 10px 28px;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            outline: none;
-            min-width: 120px;
-        }
-
-        .btn-confirm {
-            background: #E2001A;
-            color: white;
-        }
-
-        .btn-confirm:hover {
-            background: #444;
-            transform: translateY(-1px);
-        }
-
-        .btn-confirm:active {
-            transform: translateY(0);
-        }
-
-        .btn-cancel {
-            background: transparent;
-            color: #333;
-            border: 1px solid #ddd;
-        }
-
-        .btn-cancel:hover {
-            background: #f5f5f5;
-            border-color: #ccc;
-        }
-
-        /* Efecto al cerrar */
-        .modal-closing {
-            animation: fadeOut 0.2s ease-out forwards;
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        .modal-container-closing {
-            animation: slideOutUp 0.2s ease-out forwards;
-        }
-
-        @keyframes slideOutUp {
-            from { 
-                transform: translateY(0);
-                opacity: 1;
+    
+            // Mostrar RegistroTecnico.html al hacer click en Registro de Técnicos
+            const registroBtn = document.getElementById('registroTecnicosBtn');
+            if (registroBtn) {
+                registroBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Ocultar el header de bienvenida
+                    welcomeHeader.style.display = 'none';
+                    const contentArea = document.getElementById('contentArea');
+                    contentArea.innerHTML = `
+                        <iframe src="static/RegistroTecnico.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                    `;
+                });
             }
-            to { 
-                transform: translateY(-20px);
-                opacity: 0;
+    
+            // Mostrar Herramientas.html al hacer click en Herramientas
+            const herramientasMenu = Array.from(document.querySelectorAll('.menu-item')).find(item => {
+                const icon = item.querySelector('i.fas.fa-tools');
+                return icon && item.querySelector('span') && item.querySelector('span').textContent.trim() === 'Herramientas';
+            });
+            if (herramientasMenu) {
+                herramientasMenu.querySelector('a').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    welcomeHeader.style.display = 'none';
+                    const contentArea = document.getElementById('contentArea');
+                    contentArea.innerHTML = `
+                        <iframe src="static/herramientas.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                    `;
+                });
             }
-        }
 
-        @media (max-width: 480px) {
-            .modal-container {
-                padding: 24px;
+            // Mostrar perfil embebido al hacer click en perfil
+            const perfilBtn = document.getElementById('perfilBtn');
+            if (perfilBtn) {
+                perfilBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Ocultar el header de bienvenida
+                    welcomeHeader.style.display = 'none';
+                    const contentArea = document.getElementById('contentArea');
+                    contentArea.innerHTML = `
+                        <iframe src="static/perfil.html" style="width:100%;height:80vh;border:none;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.1);background:#fff;"></iframe>
+                    `;
+                });
             }
-            
-            .modal-actions {
-                flex-direction: column;
-                gap: 8px;
+
+            // Configurar el botón de cierre de sesión
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.getElementById('logoutModal').style.display = 'flex';
+                });
             }
-            
-            .btn-confirm, .btn-cancel {
-                width: 100%;
-            }
-        }
-        </style>
 
-        <script>
-        // Función para mostrar el modal
-        function showLogoutModal() {
-            const modal = document.getElementById('logoutModal');
-            modal.style.display = 'flex';
-        }
+            // Configurar botones del modal de confirmación
+            document.getElementById('confirmLogout').addEventListener('click', function() {
+                // Realizar el cierre de sesión
+                fetch('/logout', {
+                    method: 'GET',
+                    credentials: 'same-origin'
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        // Limpiar almacenamiento local y redirigir
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.href = '/login';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cerrar sesión:', error);
+                    window.location.href = '/login';
+                });
+            });
 
-        // Función para ocultar el modal con animación
-        function hideLogoutModal() {
-            const modal = document.getElementById('logoutModal');
-            const container = modal.querySelector('.modal-container');
-            
-            modal.classList.add('modal-closing');
-            container.classList.add('modal-container-closing');
-            
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.classList.remove('modal-closing');
-                container.classList.remove('modal-container-closing');
-            }, 200);
-        }
+            document.getElementById('cancelLogout').addEventListener('click', function() {
+                document.getElementById('logoutModal').style.display = 'none';
+            });
 
-        // Event listeners para los botones
-        document.getElementById('confirmLogout').addEventListener('click', function() {
-            hideLogoutModal();
-            // Aquí iría la lógica para cerrar sesión
-            // window.location.href = '/logout';
+            // Cerrar modal al hacer clic fuera del contenido
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    document.getElementById('logoutModal').style.display = 'none';
+                }
+            });
         });
-
-        document.getElementById('cancelLogout').addEventListener('click', function() {
-            hideLogoutModal();
-        });
-
-        // Cerrar al hacer clic fuera del modal
-        document.getElementById('logoutModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                hideLogoutModal();
-            }
-        });
-        </script>
-        
-</body>     
+    </script>
+</body>
 </html>
