@@ -485,6 +485,14 @@
                         <span id="telefono" class="info-value"></span>
                     </div>
                 </div>
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="info-content">
+                        <span class="info-label">Estado</span>
+                        <span id="estado" class="info-value"></span>
+                    </div>
+                </div>
+
             </div>
             
             <div class="folder-selector">
@@ -578,6 +586,8 @@
                 $('#supervisor').text(currentTechnician.supervisor || 'N/A');
                 $('#aliado').text(currentTechnician.aliado || 'N/A');
                 $('#telefono').text(currentTechnician.telefono || 'N/A');
+                $('#estado').text(currentTechnician.estado || 'N/A');
+
             }
             
             // Resetear información del técnico
@@ -586,7 +596,7 @@
                 $('#technicianInfo').hide();
                 $('#tablesContainer').hide();
                 $('#saveBtn').hide();
-                $('#nombre, #apellido, #ciudad, #supervisor, #aliado, #telefono').text('');
+                $('#nombre, #apellido, #ciudad, #supervisor, #aliado, #telefono, #estado').text('');
                 $('#carpeta').val('').trigger('change');
                 $('#tablesContainer').empty();
             }

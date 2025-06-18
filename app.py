@@ -219,11 +219,12 @@ def get_technician():
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT r.idregistroTecnico, r.nombre, r.apellido, r.telefono,
-                   c.nombre as ciudad, a.nombre as aliado, s.nombre as supervisor
+                   c.nombre as ciudad, a.nombre as aliado, s.nombre as supervisor, e.nombre as estado
             FROM registrotecnico r
             LEFT JOIN ciudad c ON r.idCiudad = c.id
             LEFT JOIN aliado a ON r.idAliado = a.id
             LEFT JOIN supervisor s ON r.idSupervisor = s.id
+            LEFT JOIN estado e ON r.idEstado = e.id
             WHERE r.cedula = %s
             LIMIT 1
         """
@@ -372,6 +373,137 @@ def save_tools():
             'message': 'Error al guardar herramientas',
             'error': str(e)
         }), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+    
+# ------------------- NUEVAS RUTAS PARA PERFIL DE USUARIO -------------------
+@app.route('/api/get_user_profile', methods=['GET'])
+def get_user_profile():
+    if 'usuario_id' not in session:
+        return jsonify({'success': False, 'message': 'No autenticado'}), 401
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        query = """
+            SELECT idusuario, cedula, nombre, apellido, cargo, correo, foto, telefono
+            FROM usuario 
+            WHERE idusuario = %s
+            LIMIT 1
+        """
+        cursor.execute(query, (session['usuario_id'],))
+        user = cursor.fetchone()
+
+        if user:
+            # Asegurar que la URL de la foto sea absoluta si es necesario
+            if user['foto'] and not user['foto'].startswith(('http://', 'https://')):
+                user['foto'] = url_for('serve_static', filename=f"uploads/{user['foto']}", _external=True)
+            elif not user['foto']:
+                user['foto'] = url_for('serve_static', filename="images/default-avatar.png", _external=True)
+            
+            return jsonify({
+                'success': True,
+                'user': user
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Usuario no encontrado'}), 404
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+@app.route('/api/update_profile_photo', methods=['POST'])
+def update_profile_photo():
+    if 'usuario_id' not in session:
+        return jsonify({'success': False, 'message': 'No autenticado'}), 401
+
+    if 'photo' not in request.files:
+        return jsonify({'success': False, 'message': 'No se envió archivo'}), 400
+
+    photo = request.files['photo']
+    if photo.filename == '':
+        return jsonify({'success': False, 'message': 'Nombre de archivo vacío'}), 400
+
+    # Validar que sea una imagen
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+    if '.' in photo.filename and photo.filename.rsplit('.', 1)[1].lower() not in allowed_extensions:
+        return jsonify({'success': False, 'message': 'Formato de imagen no permitido'}), 400
+
+    try:
+        # Crear directorio de uploads si no existe
+        upload_folder = os.path.join(app.static_folder, 'uploads')
+        if not os.path.exists(upload_folder):
+            os.makedirs(upload_folder)
+
+        # Generar nombre único para el archivo
+        filename = f"profile_{session['usuario_id']}_{int(datetime.now().timestamp())}.{photo.filename.rsplit('.', 1)[1].lower()}"
+        filepath = os.path.join(upload_folder, filename)
+        photo.save(filepath)
+
+        # Actualizar en la base de datos
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+
+        cursor = conn.cursor()
+        cursor.execute("UPDATE usuario SET foto = %s WHERE idusuario = %s", (filename, session['usuario_id']))
+        conn.commit()
+
+        new_photo_url = url_for('serve_static', filename=f"uploads/{filename}", _external=True)
+        return jsonify({
+            'success': True,
+            'message': 'Foto actualizada correctamente',
+            'newPhotoUrl': new_photo_url
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if 'conn' in locals() and conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+@app.route('/api/change_password', methods=['POST'])
+def change_password():
+    if 'usuario_id' not in session:
+        return jsonify({'success': False, 'message': 'No autenticado'}), 401
+
+    data = request.get_json()
+    if not data or 'currentPassword' not in data or 'newPassword' not in data:
+        return jsonify({'success': False, 'message': 'Datos incompletos'}), 400
+
+    current_password = data['currentPassword']
+    new_password = data['newPassword']
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT clave FROM usuario WHERE idusuario = %s", (session['usuario_id'],))
+        user = cursor.fetchone()
+
+        if not user or not check_password_hash(user['clave'], current_password):
+            return jsonify({'success': False, 'message': 'Contraseña actual incorrecta'}), 401
+
+        # Actualizar contraseña
+        hashed_password = generate_password_hash(new_password)
+        cursor.execute("UPDATE usuario SET clave = %s WHERE idusuario = %s", (hashed_password, session['usuario_id']))
+        conn.commit()
+
+        return jsonify({'success': True, 'message': 'Contraseña cambiada correctamente'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
     finally:
         if conn and conn.is_connected():
             cursor.close()
