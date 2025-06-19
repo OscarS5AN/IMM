@@ -703,12 +703,10 @@
                             <a href="#" id="AdminBtn">
                                 <i class="fas fa-tasks"></i>
                                 <span>Gestion Técnicos</span>
-                            </a>
+                            </a>xdcfvb 
                         </div>
                     </div>
                 </div>
-               
-                    
                 
                 <div class="menu-item has-submenu" id="inventarioMenuItem">
                     <a href="#">
@@ -736,7 +734,7 @@
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Cerrar Sesión</span>
                     </a>
-                </div>
+            </div>
             </div>
             <div class="sidebar-logo-bottom">
                 <img src="static/images/ClaroLogoW.webp" alt="Logo Claro" class="logo-claro">
@@ -995,6 +993,19 @@
 
             // Mostrar AdministracionTecnico.html al hacer click en Administracion Técnicos
             const adminBtn = document.getElementById('AdminBtn');
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setActiveMenuItem(document.getElementById('AdministracionMenuItem'));
+                    
+                    // Ocultar el header de bienvenida
+                    welcomeHeader.style.display = 'none';
+                    const contentArea = document.getElementById('contentArea');
+                    contentArea.innerHTML = `
+                        <iframe src="static/gestion_tecnicos.html" class="content-iframe" id="contentIframe"></iframe>
+                    `;
+                });
+            }
     
             // Mostrar Herramientas.html al hacer click en Herramientas
             const herramientasMenu = document.getElementById('herramientasMenuItem');
