@@ -503,6 +503,13 @@
                     </div>
                 </div>
                 <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="info-content">
+                        <span class="info-label">Interventor</span>
+                        <span id="interventor" class="info-value"></span>
+                    </div>
+                </div>
+                <div class="info-item">
                     <div class="info-icon"><i class="fas fa-phone"></i></div>
                     <div class="info-content">
                         <span class="info-label">Teléfono</span>
@@ -608,6 +615,7 @@
                 $('#ciudad').text(currentTechnician.ciudad || 'N/A');
                 $('#supervisor').text(currentTechnician.supervisor || 'N/A');
                 $('#aliado').text(currentTechnician.aliado || 'N/A');
+                $('#interventor').text(currentTechnician.interventor || 'N/A');
                 $('#telefono').text(currentTechnician.telefono || 'N/A');
                 
                 const estado = currentTechnician.estado || 'N/A';
@@ -641,7 +649,7 @@
                 $('#technicianInfo').hide();
                 $('#tablesContainer').hide();
                 $('#saveBtn').hide();
-                $('#nombre, #apellido, #ciudad, #supervisor, #aliado, #telefono, #estado').text('');
+                $('#nombre, #apellido, #ciudad, #supervisor, #aliado, #interventor, #telefono, #estado').text('');
                 $('#carpeta').val('').trigger('change');
                 $('#tablesContainer').empty();
                 $('#estado-icon').removeClass('status-active status-retired status-disabled status-license');

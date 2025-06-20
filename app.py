@@ -219,11 +219,13 @@ def get_technician():
         cursor = conn.cursor(dictionary=True)
         query = """
             SELECT r.idregistroTecnico, r.nombre, r.apellido, r.telefono,
-                   c.nombre as ciudad, a.nombre as aliado, s.nombre as supervisor, e.nombre as estado
+                   c.nombre as ciudad, a.nombre as aliado, s.nombre as supervisor, e.nombre as estado,
+                   i.nombre as interventor
             FROM registrotecnico r
             LEFT JOIN ciudad c ON r.idCiudad = c.id
             LEFT JOIN aliado a ON r.idAliado = a.id
             LEFT JOIN supervisor s ON r.idSupervisor = s.id
+            LEFT JOIN interventor i ON r.idInterventor = i.id
             LEFT JOIN estado e ON r.idEstado = e.id
             WHERE r.cedula = %s
             LIMIT 1
