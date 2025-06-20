@@ -6,7 +6,6 @@
     <title>Gestión de Técnicos</title>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
         
@@ -18,10 +17,14 @@
             --text-color: #333;
             --light-gray: #f9f9f9;
             --border-color: #e0e0e0;
-            --success-color: #4CAF50;
-            --error-color: #f44336;
-            --warning-color: #FF9800;
-            --info-color: #2196F3;
+            --success-color: #388E3C;
+            --error-color: #D32F2F;
+            --warning-color: #FFA000;
+            --info-color: #1976D2;
+            --table-header-bg: #f8f9fa;
+            --table-hover: rgba(0, 0, 0, 0.02);
+            --table-border-radius: 8px;
+            --table-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
         
         * {
@@ -40,113 +43,140 @@
         
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 2rem;
+            margin: 0 auto;
+            padding: 20px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(211, 47, 47, 0.1);
-            border-top: 4px solid var(--primary-color);
-            animation: fadeInUp 0.6s ease-out;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
         }
         
-        .form-header {
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-        
-        .form-header h1 {
+        h1 {
             color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 1.8rem;
-        }
-        
-        .form-header p {
-            color: var(--text-color);
-            font-size: 0.95rem;
-        }
-        
-        .search-container {
+            margin-bottom: 10px;
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            align-items: center;
+            gap: 10px;
         }
         
-        .search-container input {
+        .search-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
             flex: 1;
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+            min-width: 250px;
         }
         
-        .search-container input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
-            outline: none;
+        .filter-group {
+            position: relative;
+            min-width: 200px;
         }
         
-        .search-container button {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 0 1.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        label {
+            display: block;
+            margin-bottom: 5px;
             font-weight: 500;
+            color: var(--primary-color);
         }
         
-        .search-container button:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-            box-shadow: 0 6px 12px rgba(211, 47, 47, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .table-container {
-            margin-top: 2rem;
-            overflow-x: auto;
-        }
-        
-        table {
+        input, select {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-family: 'Poppins', sans-serif;
         }
         
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(211, 47, 47, 0.2);
         }
         
-        th {
+        .btn {
+            padding: 10px 15px;
             background-color: var(--primary-color);
             color: white;
-            font-weight: 500;
-        }
-        
-        tr:hover {
-            background-color: var(--light-gray);
-        }
-        
-        .action-btn {
-            padding: 0.3rem 0.6rem;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 0.3rem;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Tabla de técnicos */
+        .technicians-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+            box-shadow: var(--table-shadow);
+            border-radius: var(--table-border-radius);
+            overflow: hidden;
+        }
+        
+        .technicians-table th {
+            background-color: var(--table-header-bg);
+            color: var(--text-color);
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .technicians-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+            transition: background-color 0.2s;
+        }
+        
+        .technicians-table tr:hover {
+            background-color: var(--table-hover);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .edit-btn {
@@ -154,22 +184,32 @@
             color: white;
         }
         
-        .delete-btn {
-            background-color: var(--error-color);
-            color: white;
+        .edit-btn:hover {
+            background-color: #1565C0;
         }
         
-        .action-btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+        .status-active {
+            color: var(--success-color);
+            font-weight: 500;
         }
         
-        .action-btn:active {
-            transform: translateY(0);
+        .status-retired {
+            color: var(--error-color);
+            font-weight: 500;
         }
         
-        /* Modal styles */
-        .modal {
+        .status-disabled {
+            color: var(--warning-color);
+            font-weight: 500;
+        }
+        
+        .status-license {
+            color: var(--info-color);
+            font-weight: 500;
+        }
+        
+        /* Modal de edición */
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -182,19 +222,20 @@
             align-items: center;
         }
         
-        .modal-content {
+        .modal-container {
             background-color: white;
-            padding: 2rem;
+            padding: 25px;
             border-radius: 8px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
+            width: 800px;
+            max-width: 95%;
+            max-height: 90vh;
             overflow-y: auto;
-            animation: modalFadeIn 0.3s ease-out;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.3s ease-out;
         }
         
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
@@ -202,155 +243,135 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
             border-bottom: 1px solid var(--border-color);
         }
         
-        .modal-header h2 {
+        .modal-title {
             color: var(--primary-color);
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 600;
         }
         
-        .close-btn {
+        .close-modal {
             background: none;
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-color);
+            color: #666;
+            transition: color 0.2s;
+        }
+        
+        .close-modal:hover {
+            color: var(--primary-color);
         }
         
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            gap: 15px;
         }
         
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 15px;
         }
         
         .form-group.full-width {
             grid-column: span 2;
         }
         
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
-        }
-        
-        input:focus, select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.2);
-            outline: none;
-        }
-        
-        .modal-footer {
+        .modal-actions {
             display: flex;
             justify-content: flex-end;
-            gap: 1rem;
-            margin-top: 1.5rem;
-            padding-top: 1rem;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
             border-top: 1px solid var(--border-color);
         }
         
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-        
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-        }
-        
-        .spinner {
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary-color);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Feedback messages */
+        .feedback-container {
+            margin: 15px 0;
         }
         
         .feedback-message {
-            text-align: center;
-            padding: 1rem;
+            padding: 15px 20px;
             border-radius: 6px;
-            margin-top: 1.5rem;
-            animation: slideDown 0.5s ease-out;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             display: none;
+            font-weight: 500;
+            text-align: center;
+            animation: fadeIn 0.3s ease-out;
         }
         
         .feedback-success {
-            background: linear-gradient(135deg, var(--success-color), #2E7D32);
+            background-color: var(--success-color);
             color: white;
         }
         
         .feedback-error {
-            background: linear-gradient(135deg, var(--error-color), #c62828);
+            background-color: var(--error-color);
             color: white;
         }
         
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .feedback-warning {
+            background-color: var(--warning-color);
+            color: white;
         }
         
-        /* Responsive adjustments */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Paginación */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .page-btn:hover:not(.active) {
+            background-color: var(--light-gray);
+        }
+        
+        .page-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
+            .search-section {
+                flex-direction: column;
+            }
+            
             .form-grid {
                 grid-template-columns: 1fr;
             }
@@ -359,56 +380,76 @@
                 grid-column: span 1;
             }
             
-            .search-container {
+            .action-buttons {
                 flex-direction: column;
-            }
-            
-            .search-container button {
-                padding: 0.8rem;
-            }
-            
-            .modal-content {
-                width: 95%;
-                padding: 1rem;
             }
         }
         
         /* Select2 custom styles */
-        .select2-container--default .select2-selection--single {
-            height: 46px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+        .select2-container {
+            width: 100% !important;
         }
         
-        .select2-container--default .select2-selection--single .select2-selection__rendered {
-            line-height: 46px;
-            padding-left: 1rem;
+        .select2-selection {
+            min-height: 42px !important;
+            display: flex !important;
+            align-items: center !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        
+        .select2-selection--single .select2-selection__rendered {
+            padding-left: 12px !important;
         }
         
         .select2-container--default .select2-selection--single .select2-selection__arrow {
-            height: 44px;
+            height: 40px !important;
         }
         
         .select2-container--default .select2-results__option--highlighted[aria-selected] {
-            background-color: var(--primary-color);
+            background-color: var(--primary-color) !important;
+        }
+        
+        /* Eliminar la X de limpieza en Select2 */
+        .select2-selection__clear {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <div class="form-header">
-            <h1>Gestión de Técnicos</h1>
-            <p>Consulta, edita o elimina técnicos registrados en el sistema</p>
+        <div class="header">
+            <h1><i class="fas fa-user-cog"></i> Gestión de Técnicos</h1>
+            <p>Consulta y actualiza la información de los técnicos registrados</p>
         </div>
         
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Buscar por cédula, nombre o apellido...">
-            <button id="searchBtn"><i class="fas fa-search"></i> Buscar</button>
+        <div class="search-section">
+            <div class="input-group">
+                <label for="searchInput"><i class="fas fa-search"></i> Buscar técnico:</label>
+                <input type="text" id="searchInput" placeholder="Ingrese cédula, nombre o apellido">
+            </div>
+            
+            <div class="input-group">
+                <label for="estadoFilter"><i class="fas fa-filter"></i> Estado:</label>
+                <select id="estadoFilter" class="select2" style="width:180px;">
+                    <option value="">Todos los estados</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Retirado">Retirado</option>
+                    <option value="Incapacidad">Incapacidad</option>
+                    <option value="Licencia">Licencia</option>
+                </select>
+            </div>
+            
+            <div class="input-group" style="align-self: flex-end;">
+                <button id="searchBtn" class="btn"><i class="fas fa-search"></i> Buscar</button>
+            </div>
         </div>
         
-        <div class="table-container">
-            <table id="tecnicosTable">
+        <div class="feedback-container">
+            <div id="feedback" class="feedback-message"></div>
+        </div>
+        
+        <div style="overflow-x: auto;">
+            <table class="technicians-table" id="techniciansTable">
                 <thead>
                     <tr>
                         <th>Cédula</th>
@@ -416,448 +457,462 @@
                         <th>Apellido</th>
                         <th>Teléfono</th>
                         <th>Ciudad</th>
-                        <th>Aliado</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="tecnicosBody">
-                    <!-- Los datos se cargarán dinámicamente -->
+                <tbody id="techniciansTableBody">
+                    <!-- Los técnicos se cargarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
         
-        <div id="feedback" class="feedback-message">
-            <i class="fas fa-check-circle"></i> <span id="feedback-text"></span>
+        <div class="pagination" id="pagination">
+            <!-- La paginación se generará dinámicamente -->
         </div>
     </div>
     
-    <!-- Modal para editar técnico -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
+    <!-- Modal de edición -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-container">
             <div class="modal-header">
-                <h2>Editar Técnico</h2>
-                <button class="close-btn" id="closeModal">&times;</button>
+                <h2 class="modal-title"><i class="fas fa-user-edit"></i> Editar Técnico</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
             </div>
-            <form id="editForm" class="form-grid">
-                <input type="hidden" id="editId" name="idregistroTecnico">
+            
+            <form id="editTechnicianForm" class="form-grid">
+                <input type="hidden" id="editId">
                 
                 <div class="form-group">
                     <label for="editCedula">Cédula:</label>
-                    <input type="text" id="editCedula" name="cedula" required readonly>
+                    <input type="text" id="editCedula" readonly>
                 </div>
                 
                 <div class="form-group">
                     <label for="editNombre">Nombre:</label>
-                    <input type="text" id="editNombre" name="nombre" required>
+                    <input type="text" id="editNombre" required pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
                 </div>
                 
                 <div class="form-group">
                     <label for="editApellido">Apellido:</label>
-                    <input type="text" id="editApellido" name="apellido" required>
+                    <input type="text" id="editApellido" required pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+">
                 </div>
                 
                 <div class="form-group">
                     <label for="editTelefono">Teléfono:</label>
-                    <input type="text" id="editTelefono" name="telefono" required>
+                    <input type="text" id="editTelefono" required pattern="[0-9]{7,12}">
                 </div>
                 
                 <div class="form-group">
                     <label for="editCiudad">Ciudad:</label>
-                    <select id="editCiudad" name="idCiudad" class="select2" required>
-                    </select>
+                    <select id="editCiudad" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editAliado">Aliado:</label>
-                    <select id="editAliado" name="idAliado" class="select2" required>
-                    </select>
+                    <select id="editAliado" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editCarpeta">Carpeta:</label>
-                    <select id="editCarpeta" name="idCarpeta" class="select2" required>
-                    </select>
+                    <select id="editCarpeta" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editEstado">Estado:</label>
-                    <select id="editEstado" name="idEstado" class="select2" required>
-                    </select>
+                    <select id="editEstado" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editSegmento">Segmento:</label>
-                    <select id="editSegmento" name="idSegmento" class="select2" required>
-                    </select>
+                    <select id="editSegmento" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editSupervisor">Supervisor:</label>
-                    <select id="editSupervisor" name="idSupervisor" class="select2" required>
-                    </select>
+                    <select id="editSupervisor" class="select2" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="editInterventor">Interventor:</label>
-                    <select id="editInterventor" name="idInterventor" class="select2" required>
-                    </select>
+                    <select id="editInterventor" class="select2" required></select>
                 </div>
                 
-                <div class="modal-footer">
+                <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancelEdit">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" class="btn" id="saveChanges">Guardar Cambios</button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Modal de confirmación para eliminar -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header">
-                <h2>Confirmar Eliminación</h2>
-                <button class="close-btn" id="closeConfirmModal">&times;</button>
-            </div>
-            <div style="padding: 1.5rem;">
-                <p>¿Estás seguro de que deseas eliminar este técnico?</p>
-                <p id="tecnicoToDelete"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancelDelete">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmDelete">Eliminar</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Overlay de carga -->
-    <div class="loading-overlay">
-        <div class="spinner"></div>
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
             // Variables globales
-            let tecnicosData = [];
-            let currentDeleteId = null;
-            let dataTable = null;
+            let currentTechnicians = [];
+            let currentPage = 1;
+            const itemsPerPage = 10;
             
             // Inicializar Select2
             $('.select2').select2({
                 width: '100%',
-                dropdownParent: $('#editModal'),
-                language: {
-                    noResults: function() { return "No se encontraron resultados"; },
-                    searching: function() { return "Buscando..."; }
+                placeholder: "Seleccione una opción",
+                allowClear: false
+            });
+            
+            $('#estadoFilter').select2({
+                minimumResultsForSearch: Infinity, // Oculta el buscador
+                width: '100%',
+                option: "Todos los estados",
+                allowClear: false
+            });
+            
+            // Cargar técnicos al inicio
+            loadTechnicians();
+            
+            // Evento de búsqueda
+            $('#searchBtn').click(function() {
+                currentPage = 1;
+                loadTechnicians();
+            });
+            
+            // También buscar al presionar Enter en el input
+            $('#searchInput').keypress(function(e) {
+                if (e.which === 13) {
+                    currentPage = 1;
+                    loadTechnicians();
                 }
             });
             
-            // Cargar parámetros para los selectores
-            function cargarParametros(tipo, selector) {
-                $.ajax({
-                    url: '/api/parametros',
-                    method: 'GET',
-                    data: { tipo: tipo },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            $(selector).empty().append('<option value="">Seleccione...</option>');
-                            $.each(response.data, function(index, item) {
-                                $(selector).append(
-                                    $('<option></option>')
-                                        .attr('value', item.id_parametro)
-                                        .text(item.nombre_parametro)
-                                );
-                            });
-                        } else {
-                            console.error('Error al cargar ' + tipo + ':', response.message);
-                            showFeedback('Error al cargar ' + tipo + ': ' + response.message, false);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al cargar ' + tipo + ':', error);
-                        showFeedback('Error al cargar datos: ' + error, false);
-                    }
-                });
-            }
+            // Cambio en el filtro de estado
+            $('#estadoFilter').change(function() {
+                currentPage = 1;
+                loadTechnicians();
+            });
             
-            // Cargar todos los técnicos
-            function cargarTecnicos(searchTerm = '') {
-                toggleLoading(true);
+            // Cargar técnicos desde la API
+            function loadTechnicians() {
+                const searchTerm = $('#searchInput').val().trim();
+                const statusFilter = $('#estadoFilter').val();
+                
+                // Mostrar loading
+                $('#techniciansTableBody').html('<tr><td colspan="7" style="text-align: center; padding: 20px;"><i class="fas fa-spinner fa-spin"></i> Cargando técnicos...</td></tr>');
                 
                 $.ajax({
-                    url: '/api/get_technicians',
+                    url: '/api/search_technicians',
                     method: 'GET',
-                    data: { search: searchTerm },
-                    dataType: 'json',
+                    data: { 
+                        search: searchTerm,
+                        estado: statusFilter 
+                    },
                     success: function(response) {
-                        if (response.success) {
-                            tecnicosData = response.data;
-                            renderTecnicosTable(tecnicosData);
+                        if (response.success && response.technicians) {
+                            currentTechnicians = response.technicians;
+                            renderTechniciansTable();
+                            renderPagination();
                         } else {
-                            showFeedback('Error al cargar técnicos: ' + response.message, false);
+                            showFeedback('Error al cargar los técnicos: ' + (response.message || 'Error desconocido'), 'error');
+                            $('#techniciansTableBody').html('<tr><td colspan="7" style="text-align: center; padding: 20px;">No se encontraron técnicos</td></tr>');
+                            $('#pagination').empty();
                         }
                     },
                     error: function(xhr, status, error) {
-                        showFeedback('Error de conexión: ' + error, false);
-                    },
-                    complete: function() {
-                        toggleLoading(false);
+                        showFeedback('Error de conexión al cargar técnicos', 'error');
+                        $('#techniciansTableBody').html('<tr><td colspan="7" style="text-align: center; padding: 20px;">Error al cargar los datos</td></tr>');
+                        $('#pagination').empty();
                     }
                 });
             }
             
             // Renderizar la tabla de técnicos
-            function renderTecnicosTable(data) {
-                const tbody = $('#tecnicosBody');
-                tbody.empty();
+            function renderTechniciansTable() {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedTechnicians = currentTechnicians.slice(startIndex, endIndex);
                 
-                if (data.length === 0) {
-                    tbody.append('<tr><td colspan="8" style="text-align: center;">No se encontraron técnicos</td></tr>');
+                const tableBody = $('#techniciansTableBody');
+                tableBody.empty();
+                
+                if (paginatedTechnicians.length === 0) {
+                    tableBody.append('<tr><td colspan="7" style="text-align: center; padding: 20px;">No se encontraron técnicos</td></tr>');
                     return;
                 }
                 
-                data.forEach(tecnico => {
+                paginatedTechnicians.forEach(tech => {
+                    // Determinar la clase de estado para el color
+                    let statusClass = '';
+                    if (tech.estado) {
+                        if (tech.estado.toLowerCase().includes('activo')) statusClass = 'status-active';
+                        else if (tech.estado.toLowerCase().includes('retirado')) statusClass = 'status-retired';
+                        else if (tech.estado.toLowerCase().includes('incapacidad')) statusClass = 'status-disabled';
+                        else if (tech.estado.toLowerCase().includes('licencia')) statusClass = 'status-license';
+                    }
+                    
                     const row = `
                         <tr>
-                            <td>${tecnico.cedula}</td>
-                            <td>${tecnico.nombre}</td>
-                            <td>${tecnico.apellido}</td>
-                            <td>${tecnico.telefono}</td>
-                            <td>${tecnico.ciudad || 'N/A'}</td>
-                            <td>${tecnico.aliado || 'N/A'}</td>
-                            <td>${tecnico.estado || 'N/A'}</td>
+                            <td>${tech.cedula || 'N/A'}</td>
+                            <td>${tech.nombre || 'N/A'}</td>
+                            <td>${tech.apellido || 'N/A'}</td>
+                            <td>${tech.telefono || 'N/A'}</td>
+                            <td>${tech.ciudad || 'N/A'}</td>
+                            <td class="${statusClass}">${tech.estado || 'N/A'}</td>
                             <td>
-                                <button class="action-btn edit-btn" data-id="${tecnico.idregistroTecnico}">
-                                    <i class="fas fa-edit"></i> Editar
-                                </button>
-                                <button class="action-btn delete-btn" data-id="${tecnico.idregistroTecnico}">
-                                    <i class="fas fa-trash-alt"></i> Eliminar
-                                </button>
+                                <div class="action-buttons">
+                                    <button class="action-btn edit-btn" data-id="${tech.idregistroTecnico}">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     `;
-                    tbody.append(row);
+                    tableBody.append(row);
                 });
                 
-                // Inicializar DataTable si no está inicializado
-                if (!dataTable) {
-                    dataTable = $('#tecnicosTable').DataTable({
-                        language: {
-                            url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                        },
-                        responsive: true
-                    });
-                } else {
-                    dataTable.destroy();
-                    dataTable = $('#tecnicosTable').DataTable({
-                        language: {
-                            url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                        },
-                        responsive: true
-                    });
-                }
+                // Configurar eventos de los botones de edición
+                $('.edit-btn').click(function() {
+                    const techId = $(this).data('id');
+                    openEditModal(techId);
+                });
             }
             
-            // Mostrar/ocultar overlay de carga
-            function toggleLoading(show) {
-                if (show) {
-                    $('.loading-overlay').fadeIn();
-                } else {
-                    $('.loading-overlay').fadeOut();
+            // Renderizar paginación
+            function renderPagination() {
+                const totalPages = Math.ceil(currentTechnicians.length / itemsPerPage);
+                const pagination = $('#pagination');
+                pagination.empty();
+                
+                if (totalPages <= 1) return;
+                
+                // Botón Anterior
+                pagination.append(`
+                    <button class="page-btn" id="prevPage" ${currentPage === 1 ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                `);
+                
+                // Números de página
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
                 }
+                
+                if (startPage > 1) {
+                    pagination.append('<button class="page-btn" data-page="1">1</button>');
+                    if (startPage > 2) {
+                        pagination.append('<span class="page-dots">...</span>');
+                    }
+                }
+                
+                for (let i = startPage; i <= endPage; i++) {
+                    pagination.append(`
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">
+                            ${i}
+                        </button>
+                    `);
+                }
+                
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pagination.append('<span class="page-dots">...</span>');
+                    }
+                    pagination.append(`<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`);
+                }
+                
+                // Botón Siguiente
+                pagination.append(`
+                    <button class="page-btn" id="nextPage" ${currentPage === totalPages ? 'disabled' : ''}>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                `);
+                
+                // Eventos de paginación
+                $('.page-btn').not('#prevPage, #nextPage').click(function() {
+                    currentPage = parseInt($(this).data('page'));
+                    renderTechniciansTable();
+                });
+                
+                $('#prevPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderTechniciansTable();
+                    }
+                });
+                
+                $('#nextPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderTechniciansTable();
+                    }
+                });
             }
             
-            // Mostrar mensaje de feedback
-            function showFeedback(message, isSuccess) {
+            // Abrir modal de edición
+            function openEditModal(techId) {
+                const technician = currentTechnicians.find(t => t.idregistroTecnico == techId);
+                if (!technician) {
+                    showFeedback('No se pudo cargar la información del técnico', 'error');
+                    return;
+                }
+                
+                // Cargar datos en el formulario
+                $('#editId').val(technician.idregistroTecnico);
+                $('#editCedula').val(technician.cedula || '');
+                $('#editNombre').val(technician.nombre || '');
+                $('#editApellido').val(technician.apellido || '');
+                $('#editTelefono').val(technician.telefono || '');
+                
+                // Cargar selectores dinámicos
+                loadSelectOptions('Ciudad', '#editCiudad', technician.idCiudad);
+                loadSelectOptions('Aliado', '#editAliado', technician.idAliado);
+                loadSelectOptions('Carpeta', '#editCarpeta', technician.idCarpeta);
+                loadSelectOptions('Estado', '#editEstado', technician.idEstado);
+                loadSelectOptions('Segmento', '#editSegmento', technician.idSegmento);
+                loadSelectOptions('Supervisor', '#editSupervisor', technician.idSupervisor);
+                loadSelectOptions('Interventor', '#editInterventor', technician.idInterventor);
+                
+                // Mostrar modal
+                $('#editModal').fadeIn();
+            }
+            
+            // Cargar opciones para selectores dinámicos
+            function loadSelectOptions(tipo, selector, selectedValue = null) {
+                $(selector).empty().append('<option value="">Cargando...</option>');
+                
+                $.ajax({
+                    url: '/api/parametros',
+                    method: 'GET',
+                    data: { tipo: tipo },
+                    success: function(response) {
+                        if (response.success && response.data) {
+                            $(selector).empty().append('<option value="">Seleccione...</option>');
+                            
+                            response.data.forEach(item => {
+                                const option = $('<option></option>')
+                                    .val(item.id_parametro)
+                                    .text(item.nombre_parametro);
+                                
+                                if (item.id_parametro == selectedValue) {
+                                    option.attr('selected', 'selected');
+                                }
+                                
+                                $(selector).append(option);
+                            });
+                            
+                            $(selector).trigger('change');
+                        } else {
+                            $(selector).empty().append('<option value="">Error al cargar</option>');
+                        }
+                    },
+                    error: function() {
+                        $(selector).empty().append('<option value="">Error de conexión</option>');
+                    }
+                });
+            }
+            
+            // Cerrar modal
+            $('#closeModal, #cancelEdit').click(function() {
+                $('#editModal').fadeOut();
+            });
+            
+            // Cerrar modal al hacer clic fuera
+            $(document).click(function(e) {
+                if ($(e.target).hasClass('modal-overlay')) {
+                    $('#editModal').fadeOut();
+                }
+            });
+            
+            // Validar formulario de edición
+            $('#editTechnicianForm').submit(function(e) {
+                e.preventDefault();
+                
+                // Validar campos requeridos
+                let isValid = true;
+                $(this).find('input[required], select[required]').each(function() {
+                    if (!$(this).val()) {
+                        $(this).addClass('input-error');
+                        isValid = false;
+                    } else {
+                        $(this).removeClass('input-error');
+                    }
+                });
+                
+                if (!isValid) {
+                    showFeedback('Por favor complete todos los campos requeridos', 'warning');
+                    return;
+                }
+                
+                // Preparar datos para enviar
+                const formData = {
+                    idregistroTecnico: $('#editId').val(),
+                    nombre: $('#editNombre').val().trim().toUpperCase(),
+                    apellido: $('#editApellido').val().trim().toUpperCase(),
+                    telefono: $('#editTelefono').val().trim(),
+                    idCiudad: $('#editCiudad').val(),
+                    idAliado: $('#editAliado').val(),
+                    idSupervisor: $('#editSupervisor').val(),
+                    idCarpeta: $('#editCarpeta').val(),
+                    idEstado: $('#editEstado').val(),
+                    idSegmento: $('#editSegmento').val(),
+                    idInterventor: $('#editInterventor').val()
+                };
+                
+                // Mostrar loading en el botón
+                const saveBtn = $('#saveChanges');
+                const originalText = saveBtn.html();
+                saveBtn.html('<i class="fas fa-spinner fa-spin"></i> Guardando...').prop('disabled', true);
+                
+                // Enviar datos por AJAX
+                $.ajax({
+                    url: '/api/update_technician',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(formData),
+                    success: function(response) {
+                        if (response.success) {
+                            showFeedback('Técnico actualizado correctamente', 'success');
+                            $('#editModal').fadeOut();
+                            loadTechnicians(); // Recargar la lista
+                        } else {
+                            showFeedback('Error al actualizar: ' + (response.message || 'Error desconocido'), 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorMsg = 'Error en el servidor';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMsg = response.message || errorMsg;
+                        } catch (e) {
+                            errorMsg = xhr.statusText || errorMsg;
+                        }
+                        showFeedback(errorMsg, 'error');
+                    },
+                    complete: function() {
+                        saveBtn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+            
+            // Mostrar mensajes de feedback
+            function showFeedback(message, type = 'error') {
                 const feedback = $('#feedback');
-                const feedbackText = $('#feedback-text');
+                const icon = type === 'success' ? 'fa-check-circle' : 
+                             type === 'warning' ? 'fa-exclamation-triangle' : 'fa-times-circle';
                 
-                feedback.removeClass('feedback-success feedback-error');
-                feedback.addClass(isSuccess ? 'feedback-success' : 'feedback-error');
-                
-                feedbackText.html(message);
-                feedback.find('i').attr('class', 
-                    isSuccess ? 'fas fa-check-circle' : 'fas fa-exclamation-circle');
-                
-                feedback.fadeIn();
+                feedback.removeClass('feedback-success feedback-error feedback-warning')
+                       .addClass(`feedback-${type}`)
+                       .html(`<i class="fas ${icon}"></i> ${message}`)
+                       .fadeIn();
                 
                 // Ocultar después de 5 segundos
                 setTimeout(() => {
                     feedback.fadeOut();
                 }, 5000);
             }
-            
-            // Abrir modal de edición
-            function openEditModal(tecnicoId) {
-                const tecnico = tecnicosData.find(t => t.idregistroTecnico == tecnicoId);
-                if (!tecnico) {
-                    showFeedback('No se encontró el técnico seleccionado', false);
-                    return;
-                }
-                
-                // Llenar el formulario con los datos del técnico
-                $('#editId').val(tecnico.idregistroTecnico);
-                $('#editCedula').val(tecnico.cedula);
-                $('#editNombre').val(tecnico.nombre);
-                $('#editApellido').val(tecnico.apellido);
-                $('#editTelefono').val(tecnico.telefono);
-                
-                // Cargar selectores y seleccionar los valores actuales
-                cargarParametros('Ciudad', '#editCiudad');
-                cargarParametros('Aliado', '#editAliado');
-                cargarParametros('Carpeta', '#editCarpeta');
-                cargarParametros('Estado', '#editEstado');
-                cargarParametros('Segmento', '#editSegmento');
-                cargarParametros('Supervisor', '#editSupervisor');
-                cargarParametros('Interventor', '#editInterventor');
-                
-                // Esperar un momento para que se carguen los selectores
-                setTimeout(() => {
-                    $('#editCiudad').val(tecnico.idCiudad).trigger('change');
-                    $('#editAliado').val(tecnico.idAliado).trigger('change');
-                    $('#editCarpeta').val(tecnico.idCarpeta).trigger('change');
-                    $('#editEstado').val(tecnico.idEstado).trigger('change');
-                    $('#editSegmento').val(tecnico.idSegmento).trigger('change');
-                    $('#editSupervisor').val(tecnico.idSupervisor).trigger('change');
-                    $('#editInterventor').val(tecnico.idInterventor).trigger('change');
-                    
-                    // Mostrar el modal
-                    $('#editModal').fadeIn();
-                }, 300);
-            }
-            
-            // Evento para buscar técnicos
-            $('#searchBtn').click(function() {
-                const searchTerm = $('#searchInput').val().trim();
-                cargarTecnicos(searchTerm);
-            });
-            
-            $('#searchInput').keypress(function(e) {
-                if (e.which === 13) {
-                    const searchTerm = $('#searchInput').val().trim();
-                    cargarTecnicos(searchTerm);
-                }
-            });
-            
-            // Evento para editar técnico (delegado porque los botones son dinámicos)
-            $('#tecnicosBody').on('click', '.edit-btn', function() {
-                const tecnicoId = $(this).data('id');
-                openEditModal(tecnicoId);
-            });
-            
-            // Evento para eliminar técnico
-            $('#tecnicosBody').on('click', '.delete-btn', function() {
-                const tecnicoId = $(this).data('id');
-                const tecnico = tecnicosData.find(t => t.idregistroTecnico == tecnicoId);
-                
-                if (tecnico) {
-                    currentDeleteId = tecnicoId;
-                    $('#tecnicoToDelete').text(`${tecnico.nombre} ${tecnico.apellido} - Cédula: ${tecnico.cedula}`);
-                    $('#confirmModal').fadeIn();
-                }
-            });
-            
-            // Confirmar eliminación
-            $('#confirmDelete').click(function() {
-                if (!currentDeleteId) return;
-                
-                toggleLoading(true);
-                
-                $.ajax({
-                    url: '/api/delete_technician',
-                    method: 'DELETE',
-                    data: JSON.stringify({ id: currentDeleteId }),
-                    contentType: 'application/json',
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            showFeedback('Técnico eliminado correctamente', true);
-                            cargarTecnicos();
-                        } else {
-                            showFeedback('Error al eliminar técnico: ' + response.message, false);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showFeedback('Error de conexión: ' + error, false);
-                    },
-                    complete: function() {
-                        toggleLoading(false);
-                        $('#confirmModal').fadeOut();
-                        currentDeleteId = null;
-                    }
-                });
-            });
-            
-            // Cancelar eliminación
-            $('#cancelDelete').click(function() {
-                $('#confirmModal').fadeOut();
-                currentDeleteId = null;
-            });
-            
-            $('#closeConfirmModal').click(function() {
-                $('#confirmModal').fadeOut();
-                currentDeleteId = null;
-            });
-            
-            // Guardar cambios en edición
-            $('#editForm').submit(function(e) {
-                e.preventDefault();
-                
-                toggleLoading(true);
-                
-                const formData = {
-                    idregistroTecnico: $('#editId').val(),
-                    nombre: $('#editNombre').val().trim(),
-                    apellido: $('#editApellido').val().trim(),
-                    telefono: $('#editTelefono').val().trim(),
-                    idCiudad: $('#editCiudad').val(),
-                    idAliado: $('#editAliado').val(),
-                    idCarpeta: $('#editCarpeta').val(),
-                    idEstado: $('#editEstado').val(),
-                    idSegmento: $('#editSegmento').val(),
-                    idSupervisor: $('#editSupervisor').val(),
-                    idInterventor: $('#editInterventor').val()
-                };
-                
-                $.ajax({
-                    url: '/api/update_technician',
-                    method: 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify(formData),
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            showFeedback('Técnico actualizado correctamente', true);
-                            cargarTecnicos();
-                            $('#editModal').fadeOut();
-                        } else {
-                            showFeedback('Error al actualizar técnico: ' + response.message, false);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        showFeedback('Error de conexión: ' + error, false);
-                    },
-                    complete: function() {
-                        toggleLoading(false);
-                    }
-                });
-            });
-            
-            // Cerrar modal de edición
-            $('#cancelEdit').click(function() {
-                $('#editModal').fadeOut();
-            });
-            
-            $('#closeModal').click(function() {
-                $('#editModal').fadeOut();
-            });
-            
-            // Cargar datos iniciales
-            cargarTecnicos();
         });
     </script>
 </body>

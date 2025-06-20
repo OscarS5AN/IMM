@@ -509,6 +509,122 @@ def change_password():
             cursor.close()
             conn.close()
 
+# ------------------- RUTAS PARA GESTIÓN DE TÉCNICOS -------------------
+@app.route('/api/search_technicians', methods=['GET'])
+def search_technicians():
+    search_term = request.args.get('search', '').strip()
+    estado_filter = request.args.get('estado', '').strip()
+
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+
+    try:
+        cursor = conn.cursor(dictionary=True)
+        
+        # Construir la consulta dinámicamente
+        query = """
+            SELECT r.idregistroTecnico, r.cedula, r.nombre, r.apellido, r.telefono,
+                   c.nombre as ciudad, c.id as idCiudad,
+                   a.nombre as aliado, a.id as idAliado, 
+                   s.nombre as supervisor, s.id as idSupervisor,
+                   e.nombre as estado, e.id as idEstado, 
+                   cp.nombre as carpeta, cp.id as idCarpeta, 
+                   sg.nombre as segmento, sg.id as idSegmento,
+                   i.nombre as interventor, i.id as idInterventor
+            FROM registrotecnico r
+            LEFT JOIN ciudad c ON r.idCiudad = c.id
+            LEFT JOIN aliado a ON r.idAliado = a.id
+            LEFT JOIN supervisor s ON r.idSupervisor = s.id
+            LEFT JOIN estado e ON r.idEstado = e.id
+            LEFT JOIN carpeta cp ON r.idCarpeta = cp.id
+            LEFT JOIN segmento sg ON r.idSegmento = sg.id
+            LEFT JOIN interventor i ON r.idInterventor = i.id
+            WHERE 1=1
+        """
+        params = []
+        
+        if search_term:
+            query += " AND (r.cedula LIKE %s OR r.nombre LIKE %s OR r.apellido LIKE %s)"
+            params.extend([f"%{search_term}%", f"%{search_term}%", f"%{search_term}%"])
+        
+        if estado_filter:
+            query += " AND e.nombre = %s"
+            params.append(estado_filter)
+            
+        query += " ORDER BY r.nombre, r.apellido"
+        
+        cursor.execute(query, params)
+        technicians = cursor.fetchall()
+        
+        return jsonify({
+            'success': True,
+            'technicians': technicians
+        })
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
+
+@app.route('/api/update_technician', methods=['POST'])
+def update_technician():
+    try:
+        data = request.get_json()
+        required_fields = ['idregistroTecnico', 'nombre', 'apellido', 'idCiudad', 'telefono',
+                          'idAliado', 'idSupervisor', 'idCarpeta', 'idEstado',
+                          'idSegmento', 'idInterventor']
+        
+        missing = [f for f in required_fields if f not in data or not data[f]]
+        if missing:
+            return jsonify({'success': False, 'message': f'Faltan campos: {", ".join(missing)}'}), 400
+
+        conn = get_db_connection()
+        if not conn:
+            return jsonify({'success': False, 'message': 'Sin conexión DB'}), 500
+
+        cursor = conn.cursor()
+        
+        query = """
+            UPDATE registrotecnico SET
+                nombre = %s,
+                apellido = %s,
+                telefono = %s,
+                idCiudad = %s,
+                idAliado = %s,
+                idSupervisor = %s,
+                idCarpeta = %s,
+                idEstado = %s,
+                idSegmento = %s,
+                idInterventor = %s
+            WHERE idregistroTecnico = %s
+        """
+        
+        cursor.execute(query, (
+            data['nombre'].upper(),
+            data['apellido'].upper(),
+            data['telefono'],
+            data['idCiudad'],
+            data['idAliado'],
+            data['idSupervisor'],
+            data['idCarpeta'],
+            data['idEstado'],
+            data['idSegmento'],
+            data['idInterventor'],
+            data['idregistroTecnico']
+        ))
+        
+        conn.commit()
+        return jsonify({'success': True, 'message': 'Técnico actualizado correctamente'})
+
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+    finally:
+        if conn and conn.is_connected():
+            cursor.close()
+            conn.close()
 # ------------------- PREVENCIÓN DE CACHÉ -------------------
 @app.after_request
 def add_header(response):
