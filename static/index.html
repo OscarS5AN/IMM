@@ -5,670 +5,683 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mercado Masivo</title>
     <link rel="icon" type="image/png" href="static/images/logoclaroRedondo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .dashboard {
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        .sidebar-logo-bottom {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            padding-bottom: 25px;
-            background: transparent;
-        }
-        .logo-claro {
-            width: 100%;
-            max-width: 114px;
-            height: auto;
-            display: block;
-            margin: 10px auto 10px auto;
-        }
-        /* Menú lateral */
-        .sidebar {
-            position: relative;
-            width: 245px;
-            background: linear-gradient(135deg, #c62828, #b71c1c);
-            color: white;
-            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            z-index: 100;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar:hover {
-            box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .logo {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .logo h2 {
-            font-size: 1.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .menu {
-            padding: 20px 0;
-        }
-        
-        .menu-item {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .menu-item a {
-            display: block;
-            padding: 15px 25px;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .menu-item a:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-            padding-left: 30px;
-        }
-        
-        .menu-item.active > a {
-            background-color: rgba(0, 0, 0, 0.2);
-            font-weight: bold;
-        }
-        
-        .menu-item a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 5px;
-            height: 100%;
-            background-color: #ffffff;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .menu-item.active > a::before,
-        .menu-item a:hover::before {
-            transform: translateX(0);
-        }
-        
-        .menu-item i {
-            margin-right: 10px;
-        }
-        
-        .submenu {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-        
-        .submenu.active {
-            max-height: 500px;
-            transition: max-height 0.5s ease-in;
-        }
-        
-        .submenu a {
-            padding-left: 45px !important;
-            font-size: 0.9rem;
-        }
-        
-        .submenu .menu-item.active > a {
-            background-color: rgba(0, 0, 0, 0.15);
-        }
-        
-        .has-submenu > a::after {
-            content: '›';
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%) rotate(90deg);
-            transition: transform 0.3s ease;
-        }
-        
-        .has-submenu.active > a::after {
-            transform: translateY(-50%) rotate(0deg);
-        }
-        
-        /* Contenido principal */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            background-color: white;
-            box-shadow: inset 5px 0 15px rgba(0, 0, 0, 0.05);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            border-radius: 5px;
-            flex-shrink: 0;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-            cursor: pointer;
-            object-fit: cover;
-            border: 2px solid #c62828;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f5f5f5;
-            color: #c62828;
-            font-size: 18px;
-        }
-        
-        .user-avatar.has-photo {
-            background-color: transparent;
-            color: transparent;
-        }
-        
-        .user-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px rgba(198, 40, 40, 0.5);
-        }
-        
-        .user-name {
-            font-weight: 500;
-            margin-right: 10px;
-            cursor: pointer;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-        }
-        
-        .profile-dropdown {
-            display: none;
-            position: absolute;
-            top: 60px;
-            right: 0;
-            width: 300px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            z-index: 1000;
-            overflow: hidden;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .profile-dropdown.active {
-            display: block;
-        }
-        
-        .profile-header {
-            padding: 15px;
-            background: linear-gradient(135deg, #c62828, #b71c1c);
-            color: white;
-            text-align: center;
-            position: relative;
-        }
-        
-        .profile-photo-container {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid white;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f5f5f5;
-            color: #c62828;
-            font-size: 24px;
-            overflow: hidden;
-        }
-        
-        .profile-photo-container.has-photo {
-            background-color: transparent;
-            color: transparent;
-        }
-        
-        .profile-photo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .profile-header h3 {
-            margin: 5px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .profile-header p {
-            margin: 0;
-            font-size: 0.9rem;
-            opacity: 0.9;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .profile-body {
-            padding: 15px;
-        }
-        
-        .profile-field {
-            display: flex;
-            margin-bottom: 12px;
-            align-items: center;
-        }
-        
-        .profile-field i {
-            width: 30px;
-            color: #c62828;
-            text-align: center;
-            margin-right: 10px;
-        }
-        
-        .profile-field span {
-            flex: 1;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .profile-actions {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            border-top: 1px solid #eee;
-        }
-        
-        .profile-btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-        }
-        
-        .profile-btn.change-photo {
-            background-color: #e0e0e0;
-            color: #333;
-        }
-        
-        .profile-btn.change-photo:hover {
-            background-color: #d0d0d0;
-        }
-        
-        .profile-btn.change-password {
-            background-color: #c62828;
-            color: white;
-        }
-        
-        .profile-btn.change-password:hover {
-            background-color: #b71c1c;
-        }
-        
-        .content {
-            padding: 20px;
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .content-iframe {
-            flex-grow: 1;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            background: #fff;
-            width: 100%;
-            min-height: 100%;
-        }
-        
-        h1 {
-            color: #c62828;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #ef9a9a;
-            padding-bottom: 10px;
-        }
-        
-        /* Modal de cambio de foto */
-        .photo-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .photo-modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 400px;
-            max-width: 90%;
-            text-align: center;
-        }
-        
-        .photo-preview-container {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 15px auto;
-            border: 3px solid #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f5f5f5;
-            color: #c62828;
-            font-size: 36px;
-            overflow: hidden;
-        }
-        
-        .photo-preview-container.has-photo {
-            background-color: transparent;
-            color: transparent;
-        }
-        
-        .photo-preview {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            margin: 15px 0;
-        }
-        
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .file-input-label {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: #e0e0e0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .file-input-label:hover {
-            background-color: #d0d0d0;
-        }
-        
-        /* Modal de cambio de contraseña */
-        .password-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .password-modal-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 400px;
-            max-width: 90%;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            position: relative;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #555;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-        
-        .form-group input:focus {
-            border-color: #c62828;
-            outline: none;
-        }
-        
-        .password-strength {
-            height: 4px;
-            background-color: #eee;
-            margin-top: 5px;
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .password-strength-bar {
-            height: 100%;
-            width: 0;
-            background-color: #ff5252;
-            transition: width 0.3s, background-color 0.3s;
-        }
-        
-        .password-requirements {
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .password-requirement {
-            display: flex;
-            align-items: center;
-            margin-bottom: 3px;
-        }
-        
-        .password-requirement i {
-            margin-right: 5px;
-            font-size: 0.7rem;
-        }
-        
-        .password-requirement.valid {
-            color: #4caf50;
-        }
-        
-        .password-requirement.valid i {
-            color: #4caf50;
-        }
-        
-        .password-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        
-        .error-message {
-            color: #c62828;
-            font-size: 0.8rem;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        @media (max-width: 768px) {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            }
+            
+            body {
+                background-color: #f5f5f5;
+                color: #333;
+            }
+            
+            .dashboard {
+                display: flex;
+                min-height: 100vh;
+            }
+            
+            .sidebar-logo-bottom {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                text-align: center;
+                padding-bottom: 25px;
+                background: transparent;
+            }
+            .logo-claro {
+                width: 100%;
+                max-width: 114px;
+                height: auto;
+                display: block;
+                margin: 10px auto 10px auto;
+            }
+            /* Menú lateral */
             .sidebar {
-                width: 70px;
-                overflow: hidden;
+                position: relative;
+                width: 245px;
+                background: linear-gradient(135deg, #c62828, #b71c1c);
+                color: white;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s ease;
+                z-index: 100;
+                height: 100vh;
+                overflow-y: auto;
             }
             
             .sidebar:hover {
-                width: 250px;
+                box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+            }
+            
+            .logo {
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             }
             
             .logo h2 {
-                display: none;
+                font-size: 1.5rem;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             }
             
-            .sidebar:hover .logo h2 {
+            .menu {
+                padding: 20px 0;
+            }
+            
+            .menu-item {
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .menu-item a {
                 display: block;
+                padding: 15px 25px;
+                color: white;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                position: relative;
             }
             
-            .menu-item a span {
-                display: none;
+            .menu-item a:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+                padding-left: 30px;
             }
             
-            .sidebar:hover .menu-item a span {
-                display: inline;
+            .menu-item.active > a {
+                background-color: rgba(0, 0, 0, 0.2);
+                font-weight: bold;
             }
             
-            .menu-item a::after {
-                display: none;
+            .menu-item a::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 5px;
+                height: 100%;
+                background-color: #ffffff;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
             }
             
-            .sidebar:hover .menu-item a::after {
-                display: inline;
+            .menu-item.active > a::before,
+            .menu-item a:hover::before {
+                transform: translateX(0);
             }
             
-            .profile-dropdown {
-                width: 280px;
-                right: -20px;
+            .menu-item i {
+                margin-right: 10px;
+            }
+            
+            .submenu {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.5s ease-out;
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+            
+            .submenu.active {
+                max-height: 500px;
+                transition: max-height 0.5s ease-in;
+            }
+            
+            .submenu a {
+                padding-left: 45px !important;
+                font-size: 0.9rem;
+            }
+            
+            .submenu .menu-item.active > a {
+                background-color: rgba(0, 0, 0, 0.15);
+            }
+            
+            .has-submenu > a::after {
+                content: '›';
+                position: absolute;
+                right: 20px;
+                top: 50%;
+                transform: translateY(-50%) rotate(90deg);
+                transition: transform 0.3s ease;
+            }
+            
+            .has-submenu.active > a::after {
+                transform: translateY(-50%) rotate(0deg);
+            }
+            
+            /* Contenido principal */
+            .main-content {
+                flex: 1;
+                padding: 20px;
+                background-color: white;
+                box-shadow: inset 5px 0 15px rgba(0, 0, 0, 0.05);
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: white;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+                border-radius: 5px;
+                flex-shrink: 0;
+            }
+            
+            .user-info {
+                display: flex;
+                align-items: center;
+                position: relative;
+            }
+            
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin-right: 10px;
+                cursor: pointer;
+                object-fit: cover;
+                border: 2px solid #c62828;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #f5f5f5;
+                color: #c62828;
+                font-size: 18px;
+            }
+
+            .user-avatar img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .user-avatar.has-photo {
+                background-color: transparent;
+                color: transparent;
+            }
+            
+            .user-avatar:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 10px rgba(198, 40, 40, 0.5);
             }
             
             .user-name {
+                font-weight: 500;
+                margin-right: 10px;
+                cursor: pointer;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 150px;
+            }
+            
+            .profile-dropdown {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 0;
+                width: 300px;
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                z-index: 1000;
+                overflow: hidden;
+                animation: fadeIn 0.3s ease;
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; transform: translateY(-10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            .profile-dropdown.active {
+                display: block;
+            }
+            
+            .profile-header {
+                padding: 15px;
+                background: linear-gradient(135deg, #c62828, #b71c1c);
+                color: white;
+                text-align: center;
+                position: relative;
+            }
+            
+            .profile-photo-container {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                border: 3px solid white;
+                margin: 0 auto 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #f5f5f5;
+                color: #c62828;
+                font-size: 24px;
+                overflow: hidden;
+            }
+            
+            .profile-photo-container.has-photo {
+                background-color: transparent;
+                color: transparent;
+            }
+            
+            .profile-photo-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .profile-header h3 {
+                margin: 5px 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .profile-header p {
+                margin: 0;
+                font-size: 0.9rem;
+                opacity: 0.9;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .profile-body {
+                padding: 15px;
+            }
+            
+            .profile-field {
+                display: flex;
+                margin-bottom: 12px;
+                align-items: center;
+            }
+            
+            .profile-field i {
+                width: 30px;
+                color: #c62828;
+                text-align: center;
+                margin-right: 10px;
+            }
+            
+            .profile-field span {
+                flex: 1;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .profile-actions {
+                display: flex;
+                justify-content: space-between;
+                padding: 15px;
+                border-top: 1px solid #eee;
+            }
+            
+            .profile-btn {
+                padding: 8px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.3s;
+                font-size: 0.85rem;
+            }
+            
+            .profile-btn.change-photo {
+                background-color: #e0e0e0;
+                color: #333;
+            }
+            
+            .profile-btn.change-photo:hover {
+                background-color: #d0d0d0;
+            }
+            
+            .profile-btn.change-password {
+                background-color: #c62828;
+                color: white;
+            }
+            
+            .profile-btn.change-password:hover {
+                background-color: #b71c1c;
+            }
+            
+            .content {
+                padding: 20px;
+                background-color: white;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            
+            .content-iframe {
+                flex-grow: 1;
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                background: #fff;
+                width: 100%;
+                min-height: 100%;
+            }
+            
+            h1 {
+                color: #c62828;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #ef9a9a;
+                padding-bottom: 10px;
+            }
+            
+            /* Modal de cambio de foto */
+            .photo-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .photo-modal-content {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                width: 400px;
+                max-width: 90%;
+                text-align: center;
+            }
+            
+            .photo-preview-container {
+                width: 150px;
+                height: 150px;
+                border-radius: 50%;
+                margin: 15px auto;
+                border: 3px solid #eee;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #f5f5f5;
+                color: #c62828;
+                font-size: 36px;
+                overflow: hidden;
+            }
+            
+            .photo-preview-container.has-photo {
+                background-color: transparent;
+                color: transparent;
+            }
+            
+            .photo-preview {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+            
+            .file-input-wrapper {
+                position: relative;
+                margin: 15px 0;
+            }
+            
+            .file-input-wrapper input[type="file"] {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+            
+            .file-input-label {
+                display: inline-block;
+                padding: 8px 15px;
+                background-color: #e0e0e0;
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            
+            .file-input-label:hover {
+                background-color: #d0d0d0;
+            }
+            
+            /* Modal de cambio de contraseña */
+            .password-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 2000;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .password-modal-content {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                width: 400px;
+                max-width: 90%;
+            }
+            
+            .form-group {
+                margin-bottom: 15px;
+                position: relative;
+            }
+            
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #555;
+            }
+            
+            .form-group input {
+                width: 100%;
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 0.9rem;
+            }
+            
+            .form-group input:focus {
+                border-color: #c62828;
+                outline: none;
+            }
+            
+            .password-strength {
+                height: 4px;
+                background-color: #eee;
+                margin-top: 5px;
+                border-radius: 2px;
+                overflow: hidden;
+                position: relative;
+            }
+            
+            .password-strength-bar {
+                height: 100%;
+                width: 0;
+                background-color: #ff5252;
+                transition: width 0.3s, background-color 0.3s;
+            }
+            
+            .password-requirements {
+                margin-top: 10px;
+                font-size: 0.8rem;
+                color: #666;
+            }
+            
+            .password-requirement {
+                display: flex;
+                align-items: center;
+                margin-bottom: 3px;
+            }
+            
+            .password-requirement i {
+                margin-right: 5px;
+                font-size: 0.7rem;
+            }
+            
+            .password-requirement.valid {
+                color: #4caf50;
+            }
+            
+            .password-requirement.valid i {
+                color: #4caf50;
+            }
+            
+            .password-actions {
+                display: flex;
+                justify-content: flex-end;
+                margin-top: 20px;
+                gap: 10px;
+            }
+            
+            .error-message {
+                color: #c62828;
+                font-size: 0.8rem;
+                margin-top: 5px;
                 display: none;
             }
-        }
+            
+            @media (max-width: 768px) {
+                .sidebar {
+                    width: 70px;
+                    overflow: hidden;
+                }
+                
+                .sidebar:hover {
+                    width: 250px;
+                }
+                
+                .logo h2 {
+                    display: none;
+                }
+                
+                .sidebar:hover .logo h2 {
+                    display: block;
+                }
+                
+                .menu-item a span {
+                    display: none;
+                }
+                
+                .sidebar:hover .menu-item a span {
+                    display: inline;
+                }
+                
+                .menu-item a::after {
+                    display: none;
+                }
+                
+                .sidebar:hover .menu-item a::after {
+                    display: inline;
+                }
+                
+                .profile-dropdown {
+                    width: 280px;
+                    right: -20px;
+                }
+                
+                .user-name {
+                    display: none;
+                }
+            }
 
-        /* Estilos para el modal de confirmación */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
+            /* Estilos para el modal de confirmación */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                justify-content: center;
+                align-items: center;
+            }
 
-        .modal-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            width: 350px;
-            max-width: 90%;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
+            .modal-container {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                width: 350px;
+                max-width: 90%;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                text-align: center;
+            }
 
-        .modal-title {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            color: #c62828;
-        }
+            .modal-title {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+                color: #c62828;
+            }
 
-        .modal-message {
-            margin-bottom: 20px;
-            color: #555;
-        }
+            .modal-message {
+                margin-bottom: 20px;
+                color: #555;
+            }
 
-        .modal-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
+            .modal-buttons {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
 
-        .modal-button {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
+            .modal-button {
+                padding: 8px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: 500;
+                transition: background-color 0.3s;
+            }
 
-        .modal-button.confirm {
-            background-color: #c62828;
-            color: white;
-        }
+            .modal-button.confirm {
+                background-color: #c62828;
+                color: white;
+            }
 
-        .modal-button.confirm:hover {
-            background-color: #b71c1c;
-        }
+            .modal-button.confirm:hover {
+                background-color: #b71c1c;
+            }
 
-        .modal-button.cancel {
-            background-color: #e0e0e0;
-            color: #333;
-        }
+            .modal-button.cancel {
+                background-color: #e0e0e0;
+                color: #333;
+            }
 
-        .modal-button.cancel:hover {
-            background-color: #d0d0d0;
-        }
+            .modal-button.cancel:hover {
+                background-color: #d0d0d0;
+            }
+
+        #sshMenuItem, #inventarioMenuItem {
+        display: none;
+    }
+
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="dashboard">
@@ -684,8 +697,6 @@
                         <span>Inicio</span>
                     </a>
                 </div>
-
-                <!-- Botón directo sin submenú para Registro de Técnicos -->
 
                 <div class="menu-item has-submenu" id="TecnicoMenuItem">
                     <a href="#">
@@ -722,7 +733,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="menu-item" id="sshMenuItem">
                     <a href="#" id="sshBtn">
                         <i class="fas fa-terminal"></i>
@@ -734,7 +745,7 @@
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Cerrar Sesión</span>
                     </a>
-            </div>
+                </div>
             </div>
             <div class="sidebar-logo-bottom">
                 <img src="static/images/ClaroLogoW.webp" alt="Logo Claro" class="logo-claro">
@@ -748,13 +759,14 @@
                 <div class="user-info" id="userProfile">
                     <span class="user-name" id="userNameDisplay"></span>
                     <div class="user-avatar" id="userAvatar">
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-user" id="defaultAvatarIcon"></i>
+                        <img src="" alt="Foto de perfil" id="avatarImage" style="display: none;">                    
                     </div>
                     <div class="profile-dropdown" id="profileDropdown">
                         <div class="profile-header">
                             <div class="profile-photo-container" id="profilePhotoContainer">
-                                <i class="fas fa-user"></i>
-                                <img src="" alt="Foto de perfil" id="profilePhoto">
+                                <i class="fas fa-user" id="defaultProfileIcon"></i>
+                                <img src="" alt="Foto de perfil" id="profilePhoto" style="display: none;">                            
                             </div>
                             <h3 id="profileName"></h3>
                             <p id="profilePosition"></p>
@@ -799,8 +811,8 @@
         <div class="photo-modal-content">
             <h3>Cambiar foto de perfil</h3>
             <div class="photo-preview-container" id="photoPreviewContainer">
-                <i class="fas fa-user"></i>
-                <img src="" alt="Previsualización" class="photo-preview" id="photoPreview">
+                <i class="fas fa-user" id="defaultPreviewIcon"></i>
+                <img src="" alt="Previsualización" class="photo-preview" id="photoPreview" style="display: none;">
             </div>
             <div class="file-input-wrapper">
                 <label for="photoInput" class="file-input-label">
@@ -1063,67 +1075,84 @@
                 }
             });
 
+            // Función para actualizar la foto de perfil en la UI
+            function updateProfilePhoto(photoUrl) {
+                const avatarImage = document.getElementById('avatarImage');
+                const profilePhoto = document.getElementById('profilePhoto');
+                const defaultAvatarIcon = document.getElementById('defaultAvatarIcon');
+                const defaultProfileIcon = document.getElementById('defaultProfileIcon');
+                const defaultPreviewIcon = document.getElementById('defaultPreviewIcon');
+                const photoPreview = document.getElementById('photoPreview');
+                
+                if (photoUrl) {
+                    // Mostrar la imagen y ocultar el icono por defecto
+                    avatarImage.src = photoUrl;
+                    avatarImage.style.display = 'block';
+                    defaultAvatarIcon.style.display = 'none';
+                    
+                    profilePhoto.src = photoUrl;
+                    profilePhoto.style.display = 'block';
+                    defaultProfileIcon.style.display = 'none';
+                    
+                    photoPreview.src = photoUrl;
+                    photoPreview.style.display = 'block';
+                    defaultPreviewIcon.style.display = 'none';
+                } else {
+                    // Mostrar el icono por defecto y ocultar la imagen
+                    avatarImage.style.display = 'none';
+                    defaultAvatarIcon.style.display = 'block';
+                    
+                    profilePhoto.style.display = 'none';
+                    defaultProfileIcon.style.display = 'block';
+                    
+                    photoPreview.style.display = 'none';
+                    defaultPreviewIcon.style.display = 'block';
+                }
+            }
+
             // Cargar información del usuario
             function loadUserProfile() {
                 fetch('/api/get_user_profile')
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error al cargar perfil');
+                        return response.json();
+                    })
                     .then(data => {
-                        if (data.success) {
+                        if (data.success && data.user) {
                             currentUser = data.user;
-                            
-                            // Actualizar la información en el header
+                            // Actualizar UI con datos del usuario
                             document.getElementById('userNameDisplay').textContent = `${currentUser.nombre} ${currentUser.apellido}`;
-                            
-                            const userAvatar = document.getElementById('userAvatar');
-                            const profilePhotoContainer = document.getElementById('profilePhotoContainer');
-                            const profilePhoto = document.getElementById('profilePhoto');
-                            
-                            if (currentUser.foto) {
-                                userAvatar.innerHTML = '';
-                                userAvatar.classList.add('has-photo');
-                                userAvatar.style.backgroundImage = `url(${currentUser.foto})`;
-                                userAvatar.style.backgroundSize = 'cover';
-                                userAvatar.style.backgroundPosition = 'center';
-                                
-                                profilePhotoContainer.innerHTML = '';
-                                profilePhotoContainer.classList.add('has-photo');
-                                profilePhotoContainer.style.backgroundImage = `url(${currentUser.foto})`;
-                                profilePhotoContainer.style.backgroundSize = 'cover';
-                                profilePhotoContainer.style.backgroundPosition = 'center';
-                                
-                                profilePhoto.src = currentUser.foto;
-                                profilePhoto.style.display = 'block';
-                            } else {
-                                userAvatar.innerHTML = '<i class="fas fa-user"></i>';
-                                userAvatar.classList.remove('has-photo');
-                                userAvatar.style.backgroundImage = '';
-                                
-                                profilePhotoContainer.innerHTML = '<i class="fas fa-user"></i>';
-                                profilePhotoContainer.classList.remove('has-photo');
-                                profilePhotoContainer.style.backgroundImage = '';
-                                
-                                profilePhoto.src = '';
-                                profilePhoto.style.display = 'none';
-                            }
-                            
-                            // Actualizar la información en el dropdown
                             document.getElementById('profileName').textContent = `${currentUser.nombre} ${currentUser.apellido}`;
-                            document.getElementById('profilePosition').textContent = currentUser.cargo;
-                            document.getElementById('profileCedula').textContent = currentUser.cedula;
-                            document.getElementById('profileEmail').textContent = currentUser.correo;
-                            document.getElementById('profilePhone').textContent = currentUser.telefono;
-                            
-                            // Guardar en localStorage para persistencia
+                            document.getElementById('profilePosition').textContent = currentUser.cargo || 'Usuario';
+                            document.getElementById('profileCedula').textContent = currentUser.cedula || 'No especificado';
+                            document.getElementById('profileEmail').textContent = currentUser.correo || 'No especificado';
+                            document.getElementById('profilePhone').textContent = currentUser.telefono || 'No especificado';
+
+                            // Actualizar foto de perfil
+                            updateProfilePhoto(currentUser.foto);
+
+                            // Control de visibilidad según rol
+                            const isAdmin = currentUser.cargo && currentUser.cargo.toLowerCase() === 'administrador';
+                            document.getElementById('sshMenuItem').style.display = isAdmin ? 'block' : 'none';
+                            document.getElementById('inventarioMenuItem').style.display = isAdmin ? 'block' : 'none';
+
+                            // Guardar en localStorage
                             localStorage.setItem('userProfile', JSON.stringify(currentUser));
+                            localStorage.setItem('userRole', currentUser.cargo || 'usuario');
                         }
                     })
                     .catch(error => {
-                        console.error('Error al cargar el perfil:', error);
-                        // Intentar cargar desde localStorage si hay un error
+                        console.error('Error:', error);
+                        // Cargar desde localStorage si hay error
                         const savedProfile = localStorage.getItem('userProfile');
                         if (savedProfile) {
                             currentUser = JSON.parse(savedProfile);
                             document.getElementById('userNameDisplay').textContent = `${currentUser.nombre} ${currentUser.apellido}`;
+                            updateProfilePhoto(currentUser.foto);
+                            const savedRole = localStorage.getItem('userRole');
+                            const isAdmin = savedRole && savedRole.toLowerCase() === 'administrador';
+                            document.getElementById('sshMenuItem').style.display = isAdmin ? 'block' : 'none';
+                            document.getElementById('inventarioMenuItem').style.display = isAdmin ? 'block' : 'none';
                         }
                     });
             }
@@ -1150,6 +1179,7 @@
             const photoInput = document.getElementById('photoInput');
             const photoPreviewContainer = document.getElementById('photoPreviewContainer');
             const photoPreview = document.getElementById('photoPreview');
+            const defaultPreviewIcon = document.getElementById('defaultPreviewIcon');
             const changePhotoBtn = document.getElementById('changePhotoBtn');
             const cancelPhotoChange = document.getElementById('cancelPhotoChange');
             const savePhotoChange = document.getElementById('savePhotoChange');
@@ -1159,17 +1189,10 @@
                 if (currentUser && currentUser.foto) {
                     photoPreview.src = currentUser.foto;
                     photoPreview.style.display = 'block';
-                    photoPreviewContainer.innerHTML = '';
-                    photoPreviewContainer.classList.add('has-photo');
-                    photoPreviewContainer.style.backgroundImage = `url(${currentUser.foto})`;
-                    photoPreviewContainer.style.backgroundSize = 'cover';
-                    photoPreviewContainer.style.backgroundPosition = 'center';
+                    defaultPreviewIcon.style.display = 'none';
                 } else {
-                    photoPreview.src = '';
                     photoPreview.style.display = 'none';
-                    photoPreviewContainer.innerHTML = '<i class="fas fa-user"></i>';
-                    photoPreviewContainer.classList.remove('has-photo');
-                    photoPreviewContainer.style.backgroundImage = '';
+                    defaultPreviewIcon.style.display = 'block';
                 }
                 
                 photoModal.style.display = 'flex';
@@ -1188,14 +1211,14 @@
                     // Validar el tipo de archivo
                     const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
                     if (!validTypes.includes(file.type)) {
-                        alert('Por favor selecciona una imagen válida (JPEG, PNG o GIF)');
+                        showNotification('Por favor selecciona una imagen válida (JPEG, PNG o GIF)', 'error');
                         photoInput.value = '';
                         return;
                     }
                     
                     // Validar el tamaño del archivo (máximo 2MB)
                     if (file.size > 2 * 1024 * 1024) {
-                        alert('La imagen no debe exceder los 2MB');
+                        showNotification('La imagen no debe exceder los 2MB', 'error');
                         photoInput.value = '';
                         return;
                     }
@@ -1204,11 +1227,7 @@
                     reader.onload = function(event) {
                         photoPreview.src = event.target.result;
                         photoPreview.style.display = 'block';
-                        photoPreviewContainer.innerHTML = '';
-                        photoPreviewContainer.classList.add('has-photo');
-                        photoPreviewContainer.style.backgroundImage = `url(${event.target.result})`;
-                        photoPreviewContainer.style.backgroundSize = 'cover';
-                        photoPreviewContainer.style.backgroundPosition = 'center';
+                        defaultPreviewIcon.style.display = 'none';
                     };
                     reader.readAsDataURL(file);
                 }
@@ -1227,23 +1246,7 @@
                     .then(data => {
                         if (data.success) {
                             // Actualizar las fotos en la interfaz
-                            const userAvatar = document.getElementById('userAvatar');
-                            const profilePhotoContainer = document.getElementById('profilePhotoContainer');
-                            
-                            userAvatar.innerHTML = '';
-                            userAvatar.classList.add('has-photo');
-                            userAvatar.style.backgroundImage = `url(${data.newPhotoUrl})`;
-                            userAvatar.style.backgroundSize = 'cover';
-                            userAvatar.style.backgroundPosition = 'center';
-                            
-                            profilePhotoContainer.innerHTML = '';
-                            profilePhotoContainer.classList.add('has-photo');
-                            profilePhotoContainer.style.backgroundImage = `url(${data.newPhotoUrl})`;
-                            profilePhotoContainer.style.backgroundSize = 'cover';
-                            profilePhotoContainer.style.backgroundPosition = 'center';
-                            
-                            document.getElementById('profilePhoto').src = data.newPhotoUrl;
-                            document.getElementById('profilePhoto').style.display = 'block';
+                            updateProfilePhoto(data.newPhotoUrl);
                             
                             // Actualizar el objeto currentUser
                             if (currentUser) {
@@ -1453,6 +1456,23 @@
             
             // Establecer Inicio como activo por defecto
             setActiveMenuItem(document.getElementById('homeMenuItem'));
+
+            // Verificar el rol al cargar la página
+            const savedRole = localStorage.getItem('userRole');
+            if (savedRole) {
+                const isAdmin = savedRole.toLowerCase() === 'administrador';
+                const sshMenuItem = document.getElementById('sshMenuItem');
+                const inventarioMenuItem = document.getElementById('inventarioMenuItem');
+                if (sshMenuItem) sshMenuItem.style.display = isAdmin ? 'block' : 'none';
+                if (inventarioMenuItem) inventarioMenuItem.style.display = isAdmin ? 'block' : 'none';
+            }
+
+            // Si no hay rol guardado, cargar el perfil
+            if (!savedRole) {
+                if (typeof loadUserProfile === 'function') {
+                    loadUserProfile();
+                }
+            }
         });
     </script>
 </body>

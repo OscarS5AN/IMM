@@ -89,9 +89,10 @@ def login():
         user = cursor.fetchone()
 
         if user and check_password_hash(user['clave'], clave_input):
-            # Guardar sesión
+    # Guardar sesión
             session['usuario_id'] = user['idusuario']
             session['nombre'] = user['nombre']
+            session['cargo'] = user['cargo'] 
             return jsonify({
                 'success': True,
                 'message': 'Login exitoso',
@@ -108,7 +109,7 @@ def login():
                 }
             })
         else:
-            return jsonify({'success': False, 'message': 'Correo o contraseña incorrectas'}), 401
+             return jsonify({'success': False, 'message': 'Correo o contraseña incorrectas'}), 401
 
     except Exception:
         return jsonify({'success': False, 'message': 'Error en el servidor'}), 500
@@ -117,6 +118,24 @@ def login():
             cursor.close()
             conn.close()
 
+# ------------------- RUTAS ESTÁTICAS -------------------
+@app.route('/ssh')
+def serve_ssh():
+    if 'usuario_id' not in session:
+        return redirect(url_for('serve_login'))
+    if session.get('cargo', '').lower() != 'administrador':
+        return redirect(url_for('serve_dashboard'))
+    return send_from_directory('static', 'ssh.html')
+
+@app.route('/herramientas')
+def serve_herramientas():
+    if 'usuario_id' not in session:
+        return redirect(url_for('serve_login'))
+    if session.get('cargo', '').lower() != 'administrador':
+        return redirect(url_for('serve_dashboard'))
+    return send_from_directory('static', 'herramientas.html')
+
+# ------------------- RUTAS PARA PARÁMETROS -------------------
 @app.route('/api/parametros', methods=['GET'])
 def obtener_parametros():
     tipo = request.args.get('tipo')
@@ -427,6 +446,20 @@ def update_profile_photo():
     if 'usuario_id' not in session:
         return jsonify({'success': False, 'message': 'No autenticado'}), 401
 
+    # Verificar si el usuario existe y está activo
+    conn = get_db_connection()
+    if not conn:
+        return jsonify({'success': False, 'message': 'Error de conexión'}), 500
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT idusuario FROM usuario WHERE idusuario = %s", (session['usuario_id'],))
+    user = cursor.fetchone()
+    if not user:
+        cursor.close()
+        conn.close()
+        return jsonify({'success': False, 'message': 'Usuario no encontrado'}), 404
+    cursor.close()
+    conn.close()
+
     if 'photo' not in request.files:
         return jsonify({'success': False, 'message': 'No se envió archivo'}), 400
 
@@ -454,7 +487,6 @@ def update_profile_photo():
         conn = get_db_connection()
         if not conn:
             return jsonify({'success': False, 'message': 'Error de conexión'}), 500
-
         cursor = conn.cursor()
         cursor.execute("UPDATE usuario SET foto = %s WHERE idusuario = %s", (filename, session['usuario_id']))
         conn.commit()
